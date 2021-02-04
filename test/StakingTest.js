@@ -116,20 +116,22 @@ describe("Staking Contract", function (){
 
        });
 
-       it("should calculate rewards correct", async function(){
+       it("rewards ", async function(){
            let ownerAddress = owner.address;
            await stakingToken.approve(roobeeStackingAddress, 100);
            await roobeeStacking.deposit(100, false, ownerAddress);
-           console.log((await roobeeStacking.earned(owner.address)).toNumber())
+           expect(await roobeeStacking.earned(owner.address)).to.equal(0);
            await ethers.provider.send('evm_increaseTime', [100000]);
            await ethers.provider.send('evm_mine', []);
-           console.log((await roobeeStacking.earned(owner.address)).toNumber())
-           console.log((await stakingToken.balanceOf(owner.address)).toNumber())
+           let earned = (await roobeeStacking.earned(owner.address)).toNumber()
+           let balanceBefore = (await stakingToken.balanceOf(owner.address)).toNumber()
            await roobeeStacking.withdraw(50);
-           console.log((await stakingToken.balanceOf(owner.address)).toNumber())
+           expect(await roobeeStacking.balanceOf(owner.address)).to.equal(50);
+           expect((await stakingToken.balanceOf(owner.address)).toNumber()).to.equal(balanceBefore+earned+50);
+           expect(await roobeeStacking.earned(owner.address)).to.equal(0);
            await ethers.provider.send('evm_increaseTime', [100000]);
            await ethers.provider.send('evm_mine', []);
-           console.log((await roobeeStacking.earned(owner.address)).toNumber())
+           expect(await roobeeStacking.earned(owner.address)).to.equal(0);
        });
 
 
