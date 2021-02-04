@@ -1,0 +1,1155 @@
+{
+  "manifestVersion": "3.1",
+  "impls": {
+    "feb9594765773409fa92ce9a027f03f2a7f26203224beada6c0f4a7503bf9722": {
+      "address": "0x8d8dF58DC92a92E5972aD10e380a029985e9e13d",
+      "txHash": "0x36be5c9c97415ab9b88a123f4b942357223562fd3f731bca63b7c4e821a2b582",
+      "layout": {
+        "storage": [
+          {
+            "contract": "ReentrancyGuard",
+            "label": "_status",
+            "type": "t_uint256",
+            "src": "contracts/ReentrancyGuard.sol:34"
+          },
+          {
+            "contract": "Ownable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "contracts/Ownable.sol:28"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "tokenManager",
+            "type": "t_contract(ITokenManager)2131",
+            "src": "contracts/Stacking.sol:19"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardsToken",
+            "type": "t_contract(IERC20)436",
+            "src": "contracts/Stacking.sol:20"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "stakingToken",
+            "type": "t_contract(IERC20)436",
+            "src": "contracts/Stacking.sol:21"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "periodFinish",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:22"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardRate",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:23"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardsDuration",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:24"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "lastUpdateTime",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:25"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardPerTokenStored",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:26"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "exchangeRate",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:27"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "maxLocks",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:28"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "initialised",
+            "type": "t_bool",
+            "src": "contracts/Stacking.sol:29"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "userRewardPerTokenPaid",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:31"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewards",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:32"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "_totalSupply",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:34"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "_balances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:35"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "_unlockedBalances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:36"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "addressStakeLocks",
+            "type": "t_mapping(t_address,t_array(t_struct(Lock)1133_storage)dyn_storage)",
+            "src": "contracts/Stacking.sol:37"
+          }
+        ],
+        "types": {
+          "t_contract(ITokenManager)2131": {
+            "label": "contract ITokenManager"
+          },
+          "t_contract(IERC20)436": {
+            "label": "contract IERC20"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_mapping(t_address,t_array(t_struct(Lock)1133_storage)dyn_storage)": {
+            "label": "mapping(address => struct DAOStacking.Lock[])"
+          },
+          "t_array(t_struct(Lock)1133_storage)dyn_storage": {
+            "label": "struct DAOStacking.Lock[]"
+          },
+          "t_struct(Lock)1133_storage": {
+            "label": "struct DAOStacking.Lock",
+            "members": [
+              {
+                "label": "endTimestamp",
+                "type": "t_uint256"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "054affe29d877fe72876471fb4b0d315ff1654865fdf8b90f14d2a72da2fa79a": {
+      "address": "0x17F28CD31e5553Db38Aff4B87C169b5f6Ee89F9C",
+      "txHash": "0x2a19886fea9b6eaacbcc0975d117e10314aafeec0cf5d58337c5d3c6008d380e",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:24"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:29"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "_status",
+            "type": "t_uint256",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:37"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:67"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "tokenManager",
+            "type": "t_contract(ITokenManager)2103",
+            "src": "contracts/Stacking.sol:18"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardsToken",
+            "type": "t_contract(IERC20)577",
+            "src": "contracts/Stacking.sol:19"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "stakingToken",
+            "type": "t_contract(IERC20)577",
+            "src": "contracts/Stacking.sol:20"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "periodFinish",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:21"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardRate",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:22"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardsDuration",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:23"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "lastUpdateTime",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:24"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardPerTokenStored",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:25"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "exchangeRate",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:26"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "maxLocks",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:27"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "initialised",
+            "type": "t_bool",
+            "src": "contracts/Stacking.sol:28"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "userRewardPerTokenPaid",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:30"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewards",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:31"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "_totalSupply",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:33"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "_balances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:34"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "_unlockedBalances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:35"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "addressStakeLocks",
+            "type": "t_mapping(t_address,t_array(t_struct(Lock)1103_storage)dyn_storage)",
+            "src": "contracts/Stacking.sol:36"
+          }
+        ],
+        "types": {
+          "t_contract(ITokenManager)2103": {
+            "label": "contract ITokenManager"
+          },
+          "t_contract(IERC20)577": {
+            "label": "contract IERC20"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_mapping(t_address,t_array(t_struct(Lock)1103_storage)dyn_storage)": {
+            "label": "mapping(address => struct DAOStacking.Lock[])"
+          },
+          "t_array(t_struct(Lock)1103_storage)dyn_storage": {
+            "label": "struct DAOStacking.Lock[]"
+          },
+          "t_struct(Lock)1103_storage": {
+            "label": "struct DAOStacking.Lock",
+            "members": [
+              {
+                "label": "endTimestamp",
+                "type": "t_uint256"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "6da7e123099d78c8073ab8846ab0001c580f4342e96a3879b3d807bcb885cdc4": {
+      "address": "0xDcDCc8c188bc91C279Aa6a17fD21e3fc2C88eaC0",
+      "txHash": "0xa301f3d60f136a96c6dbe18bf07da3bd5d873a4c56d5b64db6c66871ed2ae730",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:24"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:29"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "_status",
+            "type": "t_uint256",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:37"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:67"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "tokenManager",
+            "type": "t_contract(ITokenManager)2131",
+            "src": "contracts/Stacking.sol:18"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardsToken",
+            "type": "t_contract(IERC20)577",
+            "src": "contracts/Stacking.sol:19"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "stakingToken",
+            "type": "t_contract(IERC20)577",
+            "src": "contracts/Stacking.sol:20"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "periodFinish",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:21"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardRate",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:22"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardsDuration",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:23"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "lastUpdateTime",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:24"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardPerTokenStored",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:25"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "exchangeRate",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:26"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "maxLocks",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:27"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "initialised",
+            "type": "t_bool",
+            "src": "contracts/Stacking.sol:28"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "userRewardPerTokenPaid",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:30"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewards",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:31"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "_totalSupply",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:33"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "_balances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:34"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "_unlockedBalances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:35"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "addressStakeLocks",
+            "type": "t_mapping(t_address,t_array(t_struct(Lock)1103_storage)dyn_storage)",
+            "src": "contracts/Stacking.sol:36"
+          }
+        ],
+        "types": {
+          "t_contract(ITokenManager)2131": {
+            "label": "contract ITokenManager"
+          },
+          "t_contract(IERC20)577": {
+            "label": "contract IERC20"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_mapping(t_address,t_array(t_struct(Lock)1103_storage)dyn_storage)": {
+            "label": "mapping(address => struct DAOStacking.Lock[])"
+          },
+          "t_array(t_struct(Lock)1103_storage)dyn_storage": {
+            "label": "struct DAOStacking.Lock[]"
+          },
+          "t_struct(Lock)1103_storage": {
+            "label": "struct DAOStacking.Lock",
+            "members": [
+              {
+                "label": "endTimestamp",
+                "type": "t_uint256"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "adb6fb8ededbca1bdf0ecaf190403b01f93476abe7c471a17aaf316bc352f07a": {
+      "address": "0x438D4837Fb75E31037aAB9341d150877a58ba7D8",
+      "txHash": "0xc61ef55a0f43898289b94455ebc8b16930549600da144eb492cc5d750d98e4f4",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:24"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:29"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "_status",
+            "type": "t_uint256",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:37"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:67"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "tokenManager",
+            "type": "t_contract(ITokenManager)2134",
+            "src": "contracts/Stacking.sol:18"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardsToken",
+            "type": "t_contract(IERC20)577",
+            "src": "contracts/Stacking.sol:19"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "stakingToken",
+            "type": "t_contract(IERC20)577",
+            "src": "contracts/Stacking.sol:20"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "periodFinish",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:21"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardRate",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:22"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardsDuration",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:23"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "lastUpdateTime",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:24"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardPerTokenStored",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:25"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "exchangeRate",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:26"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "maxLocks",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:27"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "initialised",
+            "type": "t_bool",
+            "src": "contracts/Stacking.sol:28"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "userRewardPerTokenPaid",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:30"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewards",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:31"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "_totalSupply",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:33"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "_balances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:34"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "_unlockedBalances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:35"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "addressStakeLocks",
+            "type": "t_mapping(t_address,t_array(t_struct(Lock)1103_storage)dyn_storage)",
+            "src": "contracts/Stacking.sol:36"
+          }
+        ],
+        "types": {
+          "t_contract(ITokenManager)2134": {
+            "label": "contract ITokenManager"
+          },
+          "t_contract(IERC20)577": {
+            "label": "contract IERC20"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_mapping(t_address,t_array(t_struct(Lock)1103_storage)dyn_storage)": {
+            "label": "mapping(address => struct DAOStacking.Lock[])"
+          },
+          "t_array(t_struct(Lock)1103_storage)dyn_storage": {
+            "label": "struct DAOStacking.Lock[]"
+          },
+          "t_struct(Lock)1103_storage": {
+            "label": "struct DAOStacking.Lock",
+            "members": [
+              {
+                "label": "endTimestamp",
+                "type": "t_uint256"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "c6b365538b18f729ce5105c79bc21418c305d126b334d8ff43bdf5b5d123f0c1": {
+      "address": "0xFB9e1477ecEDa50f2E068A1778CbD0b4779b3333",
+      "txHash": "0xb5025c81b34183f069aafd0d8e80cc930271f49b39872a90df54b5c0224501c9",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:24"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:29"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "_status",
+            "type": "t_uint256",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:37"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:67"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "tokenManager",
+            "type": "t_contract(ITokenManager)2132",
+            "src": "contracts/Stacking.sol:18"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardsToken",
+            "type": "t_contract(IERC20)577",
+            "src": "contracts/Stacking.sol:19"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "stakingToken",
+            "type": "t_contract(IERC20)577",
+            "src": "contracts/Stacking.sol:20"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "periodFinish",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:21"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardRate",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:22"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardsDuration",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:23"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "lastUpdateTime",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:24"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardPerTokenStored",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:25"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "exchangeRate",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:26"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "maxLocks",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:27"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "initialised",
+            "type": "t_bool",
+            "src": "contracts/Stacking.sol:28"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "userRewardPerTokenPaid",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:30"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewards",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:31"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "_totalSupply",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:33"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "_balances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:34"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "_unlockedBalances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:35"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "addressStakeLocks",
+            "type": "t_mapping(t_address,t_array(t_struct(Lock)1103_storage)dyn_storage)",
+            "src": "contracts/Stacking.sol:36"
+          }
+        ],
+        "types": {
+          "t_contract(ITokenManager)2132": {
+            "label": "contract ITokenManager"
+          },
+          "t_contract(IERC20)577": {
+            "label": "contract IERC20"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_mapping(t_address,t_array(t_struct(Lock)1103_storage)dyn_storage)": {
+            "label": "mapping(address => struct DAOStacking.Lock[])"
+          },
+          "t_array(t_struct(Lock)1103_storage)dyn_storage": {
+            "label": "struct DAOStacking.Lock[]"
+          },
+          "t_struct(Lock)1103_storage": {
+            "label": "struct DAOStacking.Lock",
+            "members": [
+              {
+                "label": "endTimestamp",
+                "type": "t_uint256"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "48c6b04d4592e7a1c7765a486d32d0179fcb8e1dba7dae197cdf068c4a9378f0": {
+      "address": "0x71d19358C01E58D09F90B70813c4f63160805945",
+      "txHash": "0x326786f23c599cf3b62038e9d27dc6b09fcf646062bbd3db8afc5a34e4050adb",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:24"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:29"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "_status",
+            "type": "t_uint256",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:37"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:67"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/GSN/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "tokenManager",
+            "type": "t_contract(ITokenManager)2132",
+            "src": "contracts/Stacking.sol:18"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardsToken",
+            "type": "t_contract(IERC20)577",
+            "src": "contracts/Stacking.sol:19"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "stakingToken",
+            "type": "t_contract(IERC20)577",
+            "src": "contracts/Stacking.sol:20"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "periodFinish",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:21"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardRate",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:22"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardsDuration",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:23"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "lastUpdateTime",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:24"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewardPerTokenStored",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:25"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "exchangeRate",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:26"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "maxLocks",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:27"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "initialised",
+            "type": "t_bool",
+            "src": "contracts/Stacking.sol:28"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "userRewardPerTokenPaid",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:30"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "rewards",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:31"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "_totalSupply",
+            "type": "t_uint256",
+            "src": "contracts/Stacking.sol:33"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "_balances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:34"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "_unlockedBalances",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/Stacking.sol:35"
+          },
+          {
+            "contract": "DAOStacking",
+            "label": "addressStakeLocks",
+            "type": "t_mapping(t_address,t_array(t_struct(Lock)1103_storage)dyn_storage)",
+            "src": "contracts/Stacking.sol:36"
+          }
+        ],
+        "types": {
+          "t_contract(ITokenManager)2132": {
+            "label": "contract ITokenManager"
+          },
+          "t_contract(IERC20)577": {
+            "label": "contract IERC20"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_mapping(t_address,t_array(t_struct(Lock)1103_storage)dyn_storage)": {
+            "label": "mapping(address => struct DAOStacking.Lock[])"
+          },
+          "t_array(t_struct(Lock)1103_storage)dyn_storage": {
+            "label": "struct DAOStacking.Lock[]"
+          },
+          "t_struct(Lock)1103_storage": {
+            "label": "struct DAOStacking.Lock",
+            "members": [
+              {
+                "label": "endTimestamp",
+                "type": "t_uint256"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    }
+  },
+  "admin": {
+    "address": "0x1B83F45Eb02e266666873bD2CcBE6aa7de2F885c",
+    "txHash": "0x88a631e256495d61897ff6d28df573f9386eba9b8196178af88d2ef75dff055d"
+  }
+}
