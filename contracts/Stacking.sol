@@ -133,10 +133,19 @@ contract DAOStacking is ReentrancyGuardUpgradeable, OwnableUpgradeable {
 
     /* ========== HELPER FUNCTIONS ========== */
 
+
+    /**
+     * @notice Check if a Lock is empty
+     * @param _lock lock
+     */
     function isLockEmpty(Lock memory _lock) public pure returns (bool) {
         return _lock.endTimestamp == 0 && _lock.amount == 0;
     }
 
+    /**
+     * @notice Returns the position in which it's possible to insert a new Lock within addressStakeLocks
+     * @param _address address
+     */
     function _getEmptyLockIndexForAddress(address _address) internal view returns (uint256, uint256) {
         Lock[] storage stakedLocks = addressStakeLocks[_address];
         uint256 numberOfStakeLocks = stakedLocks.length;
@@ -189,7 +198,7 @@ contract DAOStacking is ReentrancyGuardUpgradeable, OwnableUpgradeable {
         stakingToken.safeTransfer(msg.sender, _amount);
         uint gTokensAmountToBurn = _amount.div(exchangeRate);
         tokenManager.burn(msg.sender, gTokensAmountToBurn);
-        emit Withdrawn(msg.sender, _amount);
+        emit Withdrawn(msg.sender, _aount);
 
     }
 
@@ -204,6 +213,12 @@ contract DAOStacking is ReentrancyGuardUpgradeable, OwnableUpgradeable {
         emit Unlocked(msg.sender, _amount);
     }
 
+
+    /**
+     * @notice Check if it's possible to unwrap the specified _amountToUnstake of token and updates (or deletes) related stakedLocks
+     * @param _unwrapper address who want to unwrap
+     * @param _amountToUnstake amount
+     */
     function _updateStakedTokenLocks(address _unwrapper, uint256 _amountToUnstake) internal returns (bool) {
         Lock[] storage stakedLocks = addressStakeLocks[_unwrapper];
         uint256 totalAmountUnstakedSoFar = 0;
