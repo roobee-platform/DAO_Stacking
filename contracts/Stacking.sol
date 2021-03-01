@@ -50,8 +50,7 @@ contract DAOStacking is ReentrancyGuardUpgradeable, OwnableUpgradeable {
         uint256 _rewardsDuration,
         uint256 _exchangeRate,
         uint256 _maxLocks
-    ) public   {
-        //__ReentrancyGuard_init();
+    ) external   {
         __Ownable_init();
         require(!initialised, "Already initialised");
         rewardsToken = IERC20(_rewardsToken);
@@ -82,20 +81,6 @@ contract DAOStacking is ReentrancyGuardUpgradeable, OwnableUpgradeable {
         return addressStakeLocks[account];
     }
 
-/*
-    function lockedBalanceOf(address account) external view returns (uint[] memory, uint[] memory) {
-
-        uint[] memory endTimetamps = new uint[](addressStakeLocks[account].length);
-        uint[] memory amounts = new uint[](addressStakeLocks[account].length);
-
-        for (uint i = 0; i < addressStakeLocks[account].length; i++) {
-            endTimetamps[i] = addressStakeLocks[account][i].endTimetamp;
-            amounts[i] = addressStakeLocks[account][i].amount;
-        }
-        return (endTimetamps, amounts);
-
-    }
-*/
 
     function lastTimeRewardApplicable() public view returns (uint256) {
         return min(block.timestamp, periodFinish);
@@ -189,20 +174,20 @@ contract DAOStacking is ReentrancyGuardUpgradeable, OwnableUpgradeable {
         emit Staked(msg.sender, _amount);
     }
 
-    function withdraw(uint256 _amount) public nonReentrant {
+    function withdraw(uint256 _amount) external nonReentrant {
         require(_amount > 0, "Cannot withdraw 0");
         _getReward();
-        _unlockedBalances[msg.sender].sub(_amount);
+        _unlockedBalances[msg.sender] = _unlockedBalances[msg.sender].sub(_amount);
         _totalSupply = _totalSupply.sub(_amount);
         _balances[msg.sender] = _balances[msg.sender].sub(_amount);
         stakingToken.safeTransfer(msg.sender, _amount);
         uint gTokensAmountToBurn = _amount.div(exchangeRate);
         tokenManager.burn(msg.sender, gTokensAmountToBurn);
-        emit Withdrawn(msg.sender, _aount);
+        emit Withdrawn(msg.sender, _amount);
 
     }
 
-    function unlock(uint256 _amount) public nonReentrant
+    function unlock(uint256 _amount) external nonReentrant
     {
         require(_amount > 0, "Cannot unlock 0");
         _getReward();
@@ -255,7 +240,7 @@ contract DAOStacking is ReentrancyGuardUpgradeable, OwnableUpgradeable {
         return result;
     }
 
-    function getReward() public nonReentrant {
+    function getReward() external nonReentrant {
         _getReward();
     }
 
