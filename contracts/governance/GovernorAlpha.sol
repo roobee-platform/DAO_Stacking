@@ -1,6 +1,8 @@
 pragma solidity ^0.5.16;
 pragma experimental ABIEncoderV2;
 
+import "hardhat/console.sol";
+
 contract GovernorAlpha {
     /// @notice The name of this contract
     string public constant name = "Compound Governor Alpha";
@@ -133,7 +135,7 @@ contract GovernorAlpha {
         guardian = guardian_;
     }
 
-    function propose(address[] memory targets, uint[] memory values, string[] memory signatures, bytes[] memory calldatas, string memory description) public returns (uint) {
+    function propose(address[] memory targets, uint[] memory values, string[] memory signatures, bytes[] memory calldatas, string memory description) public returns (uint) {        
         require(comp.getPriorVotes(msg.sender, sub256(block.number, 1)) > proposalThreshold(), "GovernorAlpha::propose: proposer votes below proposal threshold");
         require(targets.length == values.length && targets.length == signatures.length && targets.length == calldatas.length, "GovernorAlpha::propose: proposal function information arity mismatch");
         require(targets.length != 0, "GovernorAlpha::propose: must provide actions");

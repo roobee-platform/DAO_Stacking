@@ -3,7 +3,7 @@ pragma experimental ABIEncoderV2;
 
 import "hardhat/console.sol";
 
-contract Comp {
+contract GovernanceToken {
     /// @notice EIP-20 token name for this token
     string public constant name = "Compound";
 
@@ -219,6 +219,7 @@ contract Comp {
                 upper = center - 1;
             }
         }
+
         return checkpoints[account][lower].votes;
     }
 

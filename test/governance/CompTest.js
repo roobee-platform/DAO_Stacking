@@ -1,7 +1,15 @@
 const { expect } = require("chai");
 const { expectRevert } = require('@openzeppelin/test-helpers');
 
-const { address, signMessage, mineBlock, complete, stopMining, startMining } = require('../utils/Utils');
+const {
+  address, 
+  signMessage, 
+  mineBlock,
+  complete, 
+  stopMining,
+  startMining,
+  expectObject
+} = require('../utils/Utils');
 
 describe('Comp', () => {
   const name = 'Compound';
@@ -94,30 +102,19 @@ describe('Comp', () => {
       const t1 = await complete(comp.connect(guy).delegate(a1.address));
       expect(await comp.numCheckpoints(a1.address)).equal(1);
 
-      const t2 = await (await comp.connect(guy).transfer(a2.address, 10)).wait();
+      const t2 = await complete(comp.connect(guy).transfer(a2.address, 10))
       expect(await comp.numCheckpoints(a1.address)).equal(2);
 
-      const t3 = await (await comp.connect(guy).transfer(a2.address, 10)).wait();
+      const t3 = await complete(comp.connect(guy).transfer(a2.address, 10));
       expect(await comp.numCheckpoints(a1.address)).equal(3);
 
-      const t4 = await (await comp.connect(root).transfer(guy.address, 20)).wait();
+      const t4 = await complete(comp.connect(root).transfer(guy.address, 20));
       expect(await comp.numCheckpoints(a1.address)).equal(4);
 
-      [fromBlock, votes] = await comp.checkpoints(a1.address, 0);
-      expect(fromBlock).equal(t1.blockNumber);
-      expect(votes).equal(100);
-
-      [fromBlock, votes] = await comp.checkpoints(a1.address, 1);
-      expect(fromBlock).equal(t2.blockNumber);
-      expect(votes).equal(90);
-
-      [fromBlock, votes] = await comp.checkpoints(a1.address, 2);
-      expect(fromBlock).equal(t3.blockNumber);
-      expect(votes).equal(80);
-
-      [fromBlock, votes] = await comp.checkpoints(a1.address, 3);
-      expect(fromBlock).equal(t4.blockNumber);
-      expect(votes).equal(100);
+      expectObject(await comp.checkpoints(a1.address, 0), {fromBlock: t1.blockNumber, votes: 100});
+      expectObject(await comp.checkpoints(a1.address, 1), {fromBlock: t2.blockNumber, votes: 90});
+      expectObject(await comp.checkpoints(a1.address, 2), {fromBlock: t3.blockNumber, votes: 80});
+      expectObject(await comp.checkpoints(a1.address, 3), {fromBlock: t4.blockNumber, votes: 100});
     });
 
     it('does not add more than one checkpoint in a block', async () => {
@@ -139,24 +136,14 @@ describe('Comp', () => {
       t3 = await t3.wait();
 
       expect(await comp.numCheckpoints(a1.address)).equal(1);
-      
-      [fromBlock, votes] = await comp.checkpoints(a1.address, 0);
-      expect(fromBlock).equal(t1.blockNumber);
-      expect(votes).equal(80);
 
-      [fromBlock, votes] = await comp.checkpoints(a1.address, 1);
-      expect(fromBlock).equal(0);
-      expect(votes).equal(0);
+      expectObject(await comp.checkpoints(a1.address, 0), {fromBlock: t1.blockNumber, votes: 80});
+      expectObject(await comp.checkpoints(a1.address, 1), {fromBlock: 0, votes: 0});
+      expectObject(await comp.checkpoints(a1.address, 2), {fromBlock: 0, votes: 0});
 
-      [fromBlock, votes] = await comp.checkpoints(a1.address, 2);
-      expect(fromBlock).equal(0);
-      expect(votes).equal(0);
-
-      const t4 = await (await comp.connect(root).transfer(guy.address, 20)).wait();
+      const t4 = await complete(comp.connect(root).transfer(guy.address, 20));
       expect(await comp.numCheckpoints(a1.address)).equal(2);
-      [fromBlock, votes] = await comp.checkpoints(a1.address, 1);
-      expect(fromBlock).equal(t4.blockNumber);
-      expect(votes).equal(100);
+      expectObject(await comp.checkpoints(a1.address, 1), {fromBlock: t4.blockNumber, votes: 100});
     });
   });
 
@@ -173,9 +160,7 @@ describe('Comp', () => {
     });
 
     it('returns the latest block if >= last checkpoint block', async () => {
-      const t1 = await (await comp.connect(root).delegate(a1.address)).wait();
-      //await ethers.provider.send('evm_mine', []);
-      //await ethers.provider.send('evm_mine', []);
+      const t1 = await complete(comp.connect(root).delegate(a1.address));
       await mineBlock(2);
 
       expect(await comp.getPriorVotes(a1.address, t1.blockNumber)).equal('10000000000000000000000000');
@@ -183,10 +168,9 @@ describe('Comp', () => {
     });
 
     it('returns zero if < first checkpoint block', async () => {
-      await ethers.provider.send('evm_mine', []);
+      mineBlock();
       const t1 = await (await comp.connect(root).delegate(a1.address)).wait()
-      await ethers.provider.send('evm_mine', []);
-      await ethers.provider.send('evm_mine', []);
+      mineBlock(2);
 
       expect(await comp.getPriorVotes(a1.address, t1.blockNumber - 1)).equal('0');
       expect(await comp.getPriorVotes(a1.address, t1.blockNumber + 1)).equal('10000000000000000000000000');
@@ -194,20 +178,16 @@ describe('Comp', () => {
 
     it('generally returns the voting balance at the appropriate checkpoint', async () => {
       const t1 = await (await comp.connect(root).delegate(a1.address)).wait();
-      await ethers.provider.send('evm_mine', []);
-      await ethers.provider.send('evm_mine', []);
+      mineBlock(2);
 
       const t2 = await (await comp.connect(root).transfer(a2.address, 10)).wait();
-      await ethers.provider.send('evm_mine', []);
-      await ethers.provider.send('evm_mine', []);
+      mineBlock(2);
 
       const t3 = await (await comp.connect(root).transfer(a2.address, 10)).wait();
-      await ethers.provider.send('evm_mine', []);
-      await ethers.provider.send('evm_mine', []);
+      mineBlock(2);
 
       const t4 = await (await comp.connect(a2).transfer(root.address, 20)).wait();
-      await ethers.provider.send('evm_mine', []);
-      await ethers.provider.send('evm_mine', []);
+      mineBlock(2);
 
       expect(await comp.getPriorVotes(a1.address, t1.blockNumber - 1)).equal('0');
       expect(await comp.getPriorVotes(a1.address, t1.blockNumber)).equal('10000000000000000000000000');

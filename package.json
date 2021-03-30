@@ -27,6 +27,7 @@
   "dependencies": {
     "@ethersproject/bytes": "^5.0.11",
     "@openzeppelin/test-helpers": "^0.5.10",
+    "bignumber.js": "^9.0.1",
     "solparse": "^2.2.8"
   }
 }
