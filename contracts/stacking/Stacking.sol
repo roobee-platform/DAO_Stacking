@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import "./interfaces/ITokenManager.sol";
+import "../interfaces/ITokenManager.sol";
 
 
 contract DAOStacking is ReentrancyGuardUpgradeable, OwnableUpgradeable {

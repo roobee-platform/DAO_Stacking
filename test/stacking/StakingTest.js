@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 //const { timeTravel } = require('./helpers/timetravel');
 
-describe("Staking Contract", function (){
+describe("Staking Contract", function () {
 
     let roobeeStacking;
     let roobeeStackingAddress;
@@ -11,8 +11,6 @@ describe("Staking Contract", function (){
     let gTokenAddress;
     let stakingToken;
     let stakingTokenAddress;
-
-
 
     beforeEach(async function () {
         // Get the ContractFactory and Signers here.
