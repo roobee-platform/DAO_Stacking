@@ -76,6 +76,11 @@ async function both(contract, method, args = []) {
     return { reply, receipt };
 }
 
+async function getBlockTimestamp() {
+    const block = await ethers.provider.getBlock();
+    return block.timestamp;
+}
+
 module.exports = { 
     encodeParameters, 
     address, 
@@ -89,5 +94,6 @@ module.exports = {
     expectArray, 
     etherMantissa,
     enfranchise,
-    both
+    both,
+    getBlockTimestamp
 };

@@ -170,7 +170,7 @@ contract DAOStacking is ReentrancyGuardUpgradeable, OwnableUpgradeable {
         _balances[msg.sender] = _balances[msg.sender].add(_amount);
         stakingToken.safeTransferFrom(msg.sender, address(this), _amount);
         uint gTokensAmountToMint = _amount.div(exchangeRate);
-        tokenManager.mint(_receiver, gTokensAmountToMint);
+        tokenManager.mint(_receiver, uint96(gTokensAmountToMint));
         emit Staked(msg.sender, _amount);
     }
 
@@ -182,7 +182,7 @@ contract DAOStacking is ReentrancyGuardUpgradeable, OwnableUpgradeable {
         _balances[msg.sender] = _balances[msg.sender].sub(_amount);
         stakingToken.safeTransfer(msg.sender, _amount);
         uint gTokensAmountToBurn = _amount.div(exchangeRate);
-        tokenManager.burn(msg.sender, gTokensAmountToBurn);
+        tokenManager.burn(msg.sender, uint96(gTokensAmountToBurn));
         emit Withdrawn(msg.sender, _amount);
 
     }
