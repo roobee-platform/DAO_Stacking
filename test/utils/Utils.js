@@ -61,6 +61,11 @@ function etherMantissa(num, scale = 1e18) {
     return new BigNumber(num).times(scale);
 }
 
+async function enfranchise(token, actor, amount) {
+    await token.mint(actor.address, etherMantissa(amount).toString());
+    await token.connect(actor).delegate(actor.address);
+}
+
 async function both(contract, method, args = []) {
     const reply = await contract.callStatic[method](...args);
     const receipt = await contract[method](...args);
@@ -78,5 +83,6 @@ module.exports = {
     expectObject, 
     expectArray, 
     etherMantissa,
+    enfranchise,
     both
 };

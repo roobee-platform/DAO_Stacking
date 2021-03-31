@@ -5,7 +5,7 @@ import "hardhat/console.sol";
 
 contract GovernorAlpha {
     /// @notice The name of this contract
-    string public constant name = "Compound Governor Alpha";
+    string public constant name = "Roobee Governor Alpha";
 
     /// @notice The number of votes in support of a proposal required in order for a quorum to be reached and for a vote to succeed
     function quorumVotes() public pure returns (uint) { return 400000e18; } // 400,000 = 4% of Comp

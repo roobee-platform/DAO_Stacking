@@ -1,22 +1,30 @@
-const { address, etherMantissa, encodeParameters, mineBlock, expectArray, stopMining, startMining, complete } = require('../../utils/Utils');
-
 const { expect } = require("chai");
 const { expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
 
+const { 
+  address, 
+  etherMantissa,
+  encodeParameters,
+  mineBlock, 
+  expectArray, 
+  stopMining, 
+  startMining, 
+  complete, 
+  enfranchise
+} = require('../../utils/Utils');
+
+
 describe('GovernorAlpha Propose', () => {
-  let gov, comp, root, acct;
+  let gov, govToken, root, acct;
 
   before(async () => {
     [root, acct, ...accounts] = await hre.waffle.provider.getWallets();
 
-    const Comp = await ethers.getContractFactory("Comp");
+    const GovernanceToken = await ethers.getContractFactory("GovernanceToken");
     const GovernorAlpha = await ethers.getContractFactory("GovernorAlpha");
 
-    comp = await Comp.deploy(root.address);
-    gov = await GovernorAlpha.deploy(address(0), comp.address, address(0));
-    
-    //comp = await deploy('Comp', [root]);
-    //gov = await deploy('GovernorAlpha', [address(0), comp._address, address(0)]);
+    govToken = await GovernanceToken.deploy(root.address);
+    gov = await GovernorAlpha.deploy(address(0), govToken.address, address(0));
   });
 
   let trivialProposal, targets, values, signatures, callDatas;
@@ -27,7 +35,7 @@ describe('GovernorAlpha Propose', () => {
     signatures = ["getBalanceOf(address)"];
     callDatas = [encodeParameters(['address'], [acct.address])];
 
-    await comp.delegate(root.address);
+    await enfranchise(govToken, root, '1000000');
     await gov.propose(targets, values, signatures, callDatas, "do nothing");
 
     proposalBlock = +(await ethers.provider.getBlockNumber());
@@ -110,14 +118,13 @@ describe('GovernorAlpha Propose', () => {
 
       describe("Additionally, if there exists a pending or active proposal from the same proposer, we must revert.", () => {
         it("reverts with pending", async () => {
-          await complete(comp.transfer(accounts[0].address, etherMantissa('1000000').toString()));
-          await comp.connect(accounts[0]).delegate(accounts[0].address);
-          mineBlock(2);
+          await enfranchise(govToken, accounts[0], '1000000');
+          await mineBlock(2);
 
-          stopMining();
+          await stopMining();
           await gov.connect(accounts[0]).propose(targets, values, signatures, callDatas, "do nothing");
 
-          startMining(false);
+          await startMining(false);
           await expectRevert(
             gov.connect(accounts[0]).propose(targets, values, signatures, callDatas, "do nothing"),
             "revert GovernorAlpha::propose: one live proposal per proposer, found an already pending proposal"
@@ -136,8 +143,7 @@ describe('GovernorAlpha Propose', () => {
     });
 
     it("This function returns the id of the newly created proposal. # proposalId(n) = succ(proposalId(n-1))", async () => {
-      await comp.transfer(accounts[2].address, etherMantissa(400001).toString());
-      await comp.connect(accounts[2]).delegate(accounts[2].address);
+      await enfranchise(govToken, accounts[2], '400001');
 
       await mineBlock();
       const nextProposalId = await gov.connect(accounts[2]).callStatic.propose(targets, values, signatures, callDatas, "yoot");
@@ -146,11 +152,11 @@ describe('GovernorAlpha Propose', () => {
     });
 
     it("emits log with id and description", async () => {
-      await comp.transfer(accounts[3].address, etherMantissa(400001).toString());
-      await comp.connect(accounts[3]).delegate(accounts[3].address);
-      await mineBlock();
+      await enfranchise(govToken, accounts[3], '400001');
 
+      await mineBlock();
       const tx = await complete(gov.connect(accounts[3]).propose(targets, values, signatures, callDatas, "yoot"));
+      
       expect(tx.events[0].event).equal("ProposalCreated")
     });
   });

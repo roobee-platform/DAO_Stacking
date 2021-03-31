@@ -5,16 +5,16 @@ import "hardhat/console.sol";
 
 contract GovernanceToken {
     /// @notice EIP-20 token name for this token
-    string public constant name = "Compound";
+    string public constant name = "RoobeeGovernance";
 
     /// @notice EIP-20 token symbol for this token
-    string public constant symbol = "COMP";
+    string public constant symbol = "RBG";
 
     /// @notice EIP-20 token decimals for this token
     uint8 public constant decimals = 18;
 
-    /// @notice Total number of tokens in circulation
-    uint public constant totalSupply = 10000000e18; // 10 million Comp
+    /// @notice Account allowed to mint and burn tokens
+    address public owner;
 
     /// @notice Allowance amounts on behalf of others
     mapping (address => mapping (address => uint96)) internal allowances;
@@ -52,51 +52,58 @@ contract GovernanceToken {
     /// @notice An event thats emitted when a delegate account's vote balance changes
     event DelegateVotesChanged(address indexed delegate, uint previousBalance, uint newBalance);
 
-    /// @notice The standard EIP-20 transfer event
-    event Transfer(address indexed from, address indexed to, uint256 amount);
+    /// @notice An event thats emitted when tokens are minted to account
+    event Mint(address indexed receiver, uint96 amount);
 
-    /// @notice The standard EIP-20 approval event
-    event Approval(address indexed owner, address indexed spender, uint256 amount);
+    /// @notice An event thats emitted when tokens are burned from account
+    event Burn(address indexed holder, uint96 amount);
 
     /**
-     * @notice Construct a new Comp token
-     * @param account The initial account to grant all the tokens
+     * @notice Construct a new Governance Token
+     * @param owner_ The account which will be able to mint and burn tokens
      */
-    constructor(address account) public {
-        balances[account] = uint96(totalSupply);
-        emit Transfer(address(0), account, totalSupply);
+    constructor(address owner_) public {
+        owner = owner_;
     }
 
     /**
-     * @notice Get the number of tokens `spender` is approved to spend on behalf of `account`
-     * @param account The address of the account holding the funds
-     * @param spender The address of the account spending the funds
-     * @return The number of tokens approved
+     * @notice Changes owner of the contract
+     * @param newOwner The account which will become new owner
      */
-    function allowance(address account, address spender) external view returns (uint) {
-        return allowances[account][spender];
+    function setOwner(address newOwner) external {
+        require(msg.sender == owner, "Comp::setOwner: only owner can set new owner");
+        owner = newOwner;
     }
 
     /**
-     * @notice Approve `spender` to transfer up to `amount` from `src`
-     * @dev This will overwrite the approval amount for `spender`
-     *  and is subject to issues noted [here](https://eips.ethereum.org/EIPS/eip-20#approve)
-     * @param spender The address of the account which may transfer tokens
-     * @param rawAmount The number of tokens that are approved (2^256-1 means infinite)
-     * @return Whether or not the approval succeeded
+     * @notice Mint tokens to account
+     * @param receiver The address of the account to get minted tokens
+     * @param amount The amount of tokens to be minted
      */
-    function approve(address spender, uint rawAmount) external returns (bool) {
-        uint96 amount;
-        if (rawAmount == uint(-1)) {
-            amount = uint96(-1);
-        } else {
-            amount = safe96(rawAmount, "Comp::approve: amount exceeds 96 bits");
-        }
+    function mint(address receiver, uint96 amount) external {
+        require(msg.sender == owner, "Comp::mint: only owner can mint tokens"); 
+        require(receiver != address(0), "Comp::mint: cannot mint to zero address");
 
-        allowances[msg.sender][spender] = amount;
+        balances[receiver] = add96(balances[receiver], amount, "Comp::mint: balance overflows");
+        emit Mint(receiver, amount);
 
-        emit Approval(msg.sender, spender, amount);
-        return true;
+        _moveDelegates(address(0), delegates[receiver], amount);
+    }
+
+    /**
+     * @notice Burn tokens from account
+     * @param holder The address of the account from where tokens will be burned
+     * @param amount The amount of tokens to be burned
+     */
+    function burn(address holder, uint96 amount) external {
+        require(msg.sender == owner, "Comp::mint: only owner can burn tokens"); 
+        require(holder != address(0), "Comp::burn: cannot burn from zero address");
+
+
+        balances[holder] = sub96(balances[holder], amount, "Comp::burn: balance underflows");
+        emit Burn(holder, amount);
+
+        _moveDelegates(delegates[holder], address(0), amount);
     }
 
     /**
@@ -106,41 +113,6 @@ contract GovernanceToken {
      */
     function balanceOf(address account) external view returns (uint) {
         return balances[account];
-    }
-
-    /**
-     * @notice Transfer `amount` tokens from `msg.sender` to `dst`
-     * @param dst The address of the destination account
-     * @param rawAmount The number of tokens to transfer
-     * @return Whether or not the transfer succeeded
-     */
-    function transfer(address dst, uint rawAmount) external returns (bool) {
-        uint96 amount = safe96(rawAmount, "Comp::transfer: amount exceeds 96 bits");
-        _transferTokens(msg.sender, dst, amount);
-        return true;
-    }
-
-    /**
-     * @notice Transfer `amount` tokens from `src` to `dst`
-     * @param src The address of the source account
-     * @param dst The address of the destination account
-     * @param rawAmount The number of tokens to transfer
-     * @return Whether or not the transfer succeeded
-     */
-    function transferFrom(address src, address dst, uint rawAmount) external returns (bool) {
-        address spender = msg.sender;
-        uint96 spenderAllowance = allowances[src][spender];
-        uint96 amount = safe96(rawAmount, "Comp::approve: amount exceeds 96 bits");
-
-        if (spender != src && spenderAllowance != uint96(-1)) {
-            uint96 newAllowance = sub96(spenderAllowance, amount, "Comp::transferFrom: transfer amount exceeds spender allowance");
-            allowances[src][spender] = newAllowance;
-
-            emit Approval(src, spender, newAllowance);
-        }
-
-        _transferTokens(src, dst, amount);
-        return true;
     }
 
     /**
@@ -231,17 +203,6 @@ contract GovernanceToken {
         emit DelegateChanged(delegator, currentDelegate, delegatee);
 
         _moveDelegates(currentDelegate, delegatee, delegatorBalance);
-    }
-
-    function _transferTokens(address src, address dst, uint96 amount) internal {
-        require(src != address(0), "Comp::_transferTokens: cannot transfer from the zero address");
-        require(dst != address(0), "Comp::_transferTokens: cannot transfer to the zero address");
-
-        balances[src] = sub96(balances[src], amount, "Comp::_transferTokens: transfer amount exceeds balance");
-        balances[dst] = add96(balances[dst], amount, "Comp::_transferTokens: transfer amount overflows");
-        emit Transfer(src, dst, amount);
-
-        _moveDelegates(delegates[src], delegates[dst], amount);
     }
 
     function _moveDelegates(address srcRep, address dstRep, uint96 amount) internal {
