@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 //const { timeTravel } = require('./helpers/timetravel');
 
-describe("Staking Contract", function () {
+describe("Stacking Contract", function () {
 
     let roobeeStacking;
     let roobeeStackingAddress;

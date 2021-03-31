@@ -43,6 +43,10 @@ async function startMining(mineNow = true) {
     }
 }
 
+async function increaseTime(seconds) {
+    await ethers.provider.send("evm_increaseTime", [seconds]);
+}
+
 function expectObject(real, expected) {
     for (const key in expected) {
         expect(real[key]).equal(expected[key]);
@@ -80,6 +84,7 @@ module.exports = {
     complete, 
     stopMining, 
     startMining, 
+    increaseTime,
     expectObject, 
     expectArray, 
     etherMantissa,
