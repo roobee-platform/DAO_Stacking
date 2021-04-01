@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 //const { timeTravel } = require('./helpers/timetravel');
 
-describe("Staking Contract", function (){
+describe("Stacking Contract", function () {
 
     let roobeeStacking;
     let roobeeStackingAddress;
@@ -12,13 +12,11 @@ describe("Staking Contract", function (){
     let stakingToken;
     let stakingTokenAddress;
 
-
-
     beforeEach(async function () {
         // Get the ContractFactory and Signers here.
         let StandartToken = await ethers.getContractFactory("StandartToken");
-        let TokenManager = await ethers.getContractFactory("MockTokenManager");
-        let MintableToken = await ethers.getContractFactory("MintableToken");
+        //let TokenManager = await ethers.getContractFactory("MockTokenManager");
+        let GovernanceToken = await ethers.getContractFactory("GovernanceToken");
         let DAOStacking = await ethers.getContractFactory("DAOStacking");
 
         [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
@@ -26,22 +24,18 @@ describe("Staking Contract", function (){
         // To deploy our contract, we just have to call Token.deploy() and await
         // for it to be deployed(), which happens onces its transaction has been
         // mined.
-        tokenManager = await TokenManager.deploy();
-        tokenManagerAddress = await tokenManager.address;
 
         stakingToken = await StandartToken.deploy("Roobee", "Roobee", 18, 300000000000000);
         stakingTokenAddress = await stakingToken.address;
 
-        gToken = await MintableToken.deploy("gRoobee", "gRoobee", 18, tokenManagerAddress);
+        gToken = await GovernanceToken.deploy(owner.address);
         gTokenAddress = await gToken.address;
-
-        await tokenManager.init(gTokenAddress);
-
-
 
         roobeeStacking = await DAOStacking.deploy();
         roobeeStackingAddress = await roobeeStacking.address;
-        await roobeeStacking.init(stakingTokenAddress, stakingTokenAddress, tokenManagerAddress, 100000, 10, 10);
+        await gToken.setOwner(roobeeStackingAddress);
+
+        await roobeeStacking.init(stakingTokenAddress, stakingTokenAddress, gTokenAddress, 100000, 10, 10);
         await stakingToken.transfer(roobeeStackingAddress, 100000000000000)
         await roobeeStacking.notifyRewardAmount(100000000000000);
     });
@@ -50,7 +44,6 @@ describe("Staking Contract", function (){
     describe("Deployment", function () {
 
         it("should set the right minter", async function () {
-            console.log(await tokenManager.token());
             console.log(await roobeeStacking.tokenManager());
             console.log(await roobeeStacking.rewardsToken());
             console.log(await roobeeStacking.stakingToken());
@@ -67,7 +60,6 @@ describe("Staking Contract", function (){
            await roobeeStacking.deposit(100, false, ownerAddress);
            expect(await roobeeStacking.balanceOf(owner.address)).to.equal(100);
            expect(await gToken.balanceOf(owner.address)).to.equal(10);
-
 
            await roobeeStacking.withdraw(100);
            expect(await roobeeStacking.balanceOf(owner.address)).to.equal(0);

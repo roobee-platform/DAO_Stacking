@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import "./interfaces/ITokenManager.sol";
+import "../interfaces/ITokenManager.sol";
 
 
 contract DAOStacking is ReentrancyGuardUpgradeable, OwnableUpgradeable {
@@ -170,7 +170,7 @@ contract DAOStacking is ReentrancyGuardUpgradeable, OwnableUpgradeable {
         _balances[msg.sender] = _balances[msg.sender].add(_amount);
         stakingToken.safeTransferFrom(msg.sender, address(this), _amount);
         uint gTokensAmountToMint = _amount.div(exchangeRate);
-        tokenManager.mint(_receiver, gTokensAmountToMint);
+        tokenManager.mint(_receiver, uint96(gTokensAmountToMint));
         emit Staked(msg.sender, _amount);
     }
 
@@ -182,7 +182,7 @@ contract DAOStacking is ReentrancyGuardUpgradeable, OwnableUpgradeable {
         _balances[msg.sender] = _balances[msg.sender].sub(_amount);
         stakingToken.safeTransfer(msg.sender, _amount);
         uint gTokensAmountToBurn = _amount.div(exchangeRate);
-        tokenManager.burn(msg.sender, gTokensAmountToBurn);
+        tokenManager.burn(msg.sender, uint96(gTokensAmountToBurn));
         emit Withdrawn(msg.sender, _amount);
 
     }
