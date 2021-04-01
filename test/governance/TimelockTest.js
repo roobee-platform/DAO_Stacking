@@ -1,13 +1,7 @@
 const { expectRevert, time } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
-/*const {
-  encodeParameters,
-  etherUnsigned,
-  freezeTime,
-  keccak256
-} = require('./Utils/Ethereum');*/
 
-const { encodeParameters, address, complete, getBlockTimestamp, increaseTime } = require('./../utils/Utils'); 
+const { encodeParameters, address, complete, getBlockTimestamp, increaseTime, mineBlock } = require('./../utils/Utils'); 
 
 const oneWeekInSeconds = 7 * 24 * 60 * 60;
 const zero = 0;
@@ -36,12 +30,18 @@ describe('Timelock', () => {
 
     target = timelock.address;
     
-    queuedTxHash = async () => {
+    queuedTxHash = async (setDelay) => {
       blockTimestamp = await getBlockTimestamp();
+      let txEta;
+      if (!setDelay) {
+        txEta = blockTimestamp + delay;
+      } else {
+        txEta = blockTimestamp + setDelay;
+      }
       return ethers.utils.keccak256(
         encodeParameters(
           ['address', 'uint256', 'string', 'bytes', 'uint256'],
-          [target, value, signature, data, blockTimestamp + delay]
+          [target, value, signature, data, txEta]
         )
       );
     };
@@ -78,7 +78,6 @@ describe('Timelock', () => {
   describe('acceptAdmin', () => {
     afterEach(async () => {
       await timelock.harnessSetAdmin(root.address);
-      //await send(timelock, 'harnessSetAdmin', [root], { from: root });
     });
 
     it('requires msg.sender to be pendingAdmin', async () => {
@@ -187,11 +186,12 @@ describe('Timelock', () => {
   });
 
   describe('executeTransaction (setDelay)', () => {
-    let firstEta;
+    let firstEta, txHash;
 
     beforeEach(async () => {
       // Queue transaction that will succeed
-      blockTimestamp = await getBlockTimestamp();
+      txHash = await queuedTxHash(delay + 1);
+      //blockTimestamp = await getBlockTimestamp();
       firstEta = blockTimestamp + delay + 1;
       await timelock.queueTransaction(target, value, signature, data, firstEta);
 
@@ -242,126 +242,86 @@ describe('Timelock', () => {
     });
 
     it('sets hash from true to false in queuedTransactions mapping, updates delay, and emits ExecuteTransaction event', async () => {
-      const configuredDelayBefore = await timelock.delay();
-      expect(configuredDelayBefore).equal(delay);
+      expect(await timelock.delay()).equal(delay);
+      expect(await timelock.queuedTransactions(txHash)).equal(true);
 
-      /*const queueTransactionsHashValueBefore = await call(timelock, 'queuedTransactions', [queuedTxHash]);
-      expect(queueTransactionsHashValueBefore).toEqual(true);
+      await increaseTime(delay + 1);
+      const result = await complete(timelock.executeTransaction(target, value, signature, data, firstEta));
 
-      const newBlockTimestamp = blockTimestamp.plus(delay).plus(1);
-      await freezeTime(newBlockTimestamp.toNumber());
+      expect(await timelock.queuedTransactions(txHash)).equal(false);
+      expect(await timelock.delay()).equal(newDelay);
 
-      const result = await send(timelock, 'executeTransaction', [target, value, signature, data, eta], {
-        from: root
-      });
-
-      const queueTransactionsHashValueAfter = await call(timelock, 'queuedTransactions', [queuedTxHash]);
-      expect(queueTransactionsHashValueAfter).toEqual(false);
-
-      const configuredDelayAfter = await call(timelock, 'delay');
-      expect(configuredDelayAfter).toEqual(newDelay.toString());
-
-      expect(result).toHaveLog('ExecuteTransaction', {
-        data,
-        signature,
-        target,
-        eta: eta.toString(),
-        txHash: queuedTxHash,
-        value: value.toString()
-      });
-
-      expect(result).toHaveLog('NewDelay', {
-        newDelay: newDelay.toString()
-      });*/
+      expect(result.events[0].event).equal('NewDelay');
+      expect(result.events[1].event).equal('ExecuteTransaction');
     });
   });
 
-  /*describe('executeTransaction (setPendingAdmin)', () => {
+  describe('executeTransaction (setPendingAdmin)', () => {
     beforeEach(async () => {
-      const configuredDelay = await call(timelock, 'delay');
+      blockTimestamp = await getBlockTimestamp();
 
-      delay = etherUnsigned(configuredDelay);
       signature = 'setPendingAdmin(address)';
-      data = encodeParameters(['address'], [newAdmin]);
-      eta = blockTimestamp.plus(delay);
+      data = encodeParameters(['address'], [newAdmin.address]);
+      eta = blockTimestamp + delay + 1;
 
-      queuedTxHash = keccak256(
+      queuedTxHash = ethers.utils.keccak256(
         encodeParameters(
           ['address', 'uint256', 'string', 'bytes', 'uint256'],
           [target, value.toString(), signature, data, eta.toString()]
         )
       );
 
-      await send(timelock, 'queueTransaction', [target, value, signature, data, eta], {
-        from: root
-      });
+      await timelock.queueTransaction(target, value, signature, data, eta);
     });
 
     it('requires admin to be msg.sender', async () => {
-      await expect(
-        send(timelock, 'executeTransaction', [target, value, signature, data, eta], { from: notAdmin })
-      ).rejects.toRevert('revert Timelock::executeTransaction: Call must come from admin.');
+      await expectRevert(
+        timelock.connect(notAdmin).executeTransaction(target, value, signature, data, eta),
+        'revert Timelock::executeTransaction: Call must come from admin.'
+      );
     });
 
     it('requires transaction to be queued', async () => {
-      const differentEta = eta.plus(1);
-      await expect(
-        send(timelock, 'executeTransaction', [target, value, signature, data, differentEta], { from: root })
-      ).rejects.toRevert("revert Timelock::executeTransaction: Transaction hasn't been queued.");
+      await expectRevert(
+        timelock.executeTransaction(target, value, signature, data, eta + 1),
+        "revert Timelock::executeTransaction: Transaction hasn't been queued."
+      )      
     });
 
     it('requires timestamp to be greater than or equal to eta', async () => {
-      await expect(
-        send(timelock, 'executeTransaction', [target, value, signature, data, eta], {
-          from: root
-        })
-      ).rejects.toRevert(
+      await expectRevert(
+        timelock.executeTransaction(target, value, signature, data, eta),
         "revert Timelock::executeTransaction: Transaction hasn't surpassed time lock."
       );
     });
 
     it('requires timestamp to be less than eta plus gracePeriod', async () => {
-      await freezeTime(blockTimestamp.plus(delay).plus(gracePeriod).plus(1).toNumber());
+      await increaseTime(delay + gracePeriod + 1);
 
-      await expect(
-        send(timelock, 'executeTransaction', [target, value, signature, data, eta], {
-          from: root
-        })
-      ).rejects.toRevert('revert Timelock::executeTransaction: Transaction is stale.');
+      await expectRevert(
+        timelock.executeTransaction(target, value, signature, data, eta),
+        'revert Timelock::executeTransaction: Transaction is stale.'
+      );
     });
 
     it('sets hash from true to false in queuedTransactions mapping, updates admin, and emits ExecuteTransaction event', async () => {
-      const configuredPendingAdminBefore = await call(timelock, 'pendingAdmin');
-      expect(configuredPendingAdminBefore).toEqual('0x0000000000000000000000000000000000000000');
+      const configuredPendingAdminBefore = await timelock.pendingAdmin();
+      expect(configuredPendingAdminBefore).equal(address(0));
 
-      const queueTransactionsHashValueBefore = await call(timelock, 'queuedTransactions', [queuedTxHash]);
-      expect(queueTransactionsHashValueBefore).toEqual(true);
+      const queueTransactionsHashValueBefore = await timelock.queuedTransactions(queuedTxHash);
+      expect(queueTransactionsHashValueBefore).equal(true);
 
-      const newBlockTimestamp = blockTimestamp.plus(delay).plus(1);
-      await freezeTime(newBlockTimestamp.toNumber())
+      const newTimestamp = blockTimestamp + delay + 1;
+      const currentTimestamp = await getBlockTimestamp();
+      await increaseTime(newTimestamp - currentTimestamp);
 
-      const result = await send(timelock, 'executeTransaction', [target, value, signature, data, eta], {
-        from: root
-      });
+      const result = await complete(timelock.executeTransaction(target, value, signature, data, eta));
 
-      const queueTransactionsHashValueAfter = await call(timelock, 'queuedTransactions', [queuedTxHash]);
-      expect(queueTransactionsHashValueAfter).toEqual(false);
+      expect(await timelock.queuedTransactions(queuedTxHash)).equal(false);
+      expect(await timelock.pendingAdmin()).equal(newAdmin.address);
 
-      const configuredPendingAdminAfter = await call(timelock, 'pendingAdmin');
-      expect(configuredPendingAdminAfter).toEqual(newAdmin);
-
-      expect(result).toHaveLog('ExecuteTransaction', {
-        data,
-        signature,
-        target,
-        eta: eta.toString(),
-        txHash: queuedTxHash,
-        value: value.toString()
-      });
-
-      expect(result).toHaveLog('NewPendingAdmin', {
-        newPendingAdmin: newAdmin
-      });
+      expect(result.events[0].event).equal('NewPendingAdmin');
+      expect(result.events[1].event).equal('ExecuteTransaction');
     });
-  });*/
+  });
 });
