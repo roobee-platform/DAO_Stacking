@@ -58,9 +58,10 @@ module.exports = {
       accounts: BSC_PRIVATE_KEY ? [BSC_PRIVATE_KEY] : []
     },
     hardhat: {
+      chainId: 1337,
       mining: {
         auto: true,
-        interval: 1000
+        interval: 3000
       }
     }
   },

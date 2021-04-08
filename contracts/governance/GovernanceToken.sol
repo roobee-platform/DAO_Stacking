@@ -13,6 +13,9 @@ contract GovernanceToken {
     /// @notice EIP-20 token decimals for this token
     uint8 public constant decimals = 18;
 
+    /// @notice Total number of tokens in circulation
+    uint96 public totalSupply = 0;
+
     /// @notice Account allowed to mint and burn tokens
     address public owner;
 
@@ -85,6 +88,7 @@ contract GovernanceToken {
         require(receiver != address(0), "Comp::mint: cannot mint to zero address");
 
         balances[receiver] = add96(balances[receiver], amount, "Comp::mint: balance overflows");
+        totalSupply = add96(totalSupply, amount,  "Comp::mint: totalSupply overflows");
         emit Mint(receiver, amount);
 
         _moveDelegates(address(0), delegates[receiver], amount);
@@ -99,8 +103,8 @@ contract GovernanceToken {
         require(msg.sender == owner, "Comp::mint: only owner can burn tokens"); 
         require(holder != address(0), "Comp::burn: cannot burn from zero address");
 
-
         balances[holder] = sub96(balances[holder], amount, "Comp::burn: balance underflows");
+        totalSupply = sub96(totalSupply, amount,  "Comp::mint: totalSupply underflows");
         emit Burn(holder, amount);
 
         _moveDelegates(delegates[holder], address(0), amount);
