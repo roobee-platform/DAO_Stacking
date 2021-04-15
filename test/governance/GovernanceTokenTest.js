@@ -13,7 +13,7 @@ const {
 
 describe('Governance Token', () => {
   const name = 'RoobeeGovernance';
-  const symbol = 'RBG';
+  const symbol = 'gROOBEE';
 
   let root, a1, accounts, chainId;
   let govToken;
@@ -57,7 +57,7 @@ describe('Governance Token', () => {
       const delegatee = root, nonce = 0, expiry = 0;
       await expectRevert(
         govToken.delegateBySig(delegatee.address, nonce, expiry, 0, badBytes, badBytes),
-        'revert Comp::delegateBySig: invalid signature'
+        'revert Roobee::delegateBySig: invalid signature'
       )
     });
 
@@ -67,7 +67,7 @@ describe('Governance Token', () => {
 
       await expectRevert(
         govToken.delegateBySig(delegatee.address, nonce, expiry, v, r, s),
-        "revert Comp::delegateBySig: invalid nonce"
+        "revert Roobee::delegateBySig: invalid nonce"
       )
     });
 
@@ -77,7 +77,7 @@ describe('Governance Token', () => {
       
       await expectRevert(
         govToken.delegateBySig(delegatee.address, nonce, expiry, v, r, s),
-        "revert Comp::delegateBySig: signature expired"
+        "revert Roobee::delegateBySig: signature expired"
       )
     });
 
@@ -152,7 +152,7 @@ describe('Governance Token', () => {
     it('reverts if block number >= current block', async () => {
       expectRevert(
         govToken.getPriorVotes(a1.address, 5e10),
-        "revert Comp::getPriorVotes: not yet determined"
+        "revert Roobee::getPriorVotes: not yet determined"
       )
     });
 

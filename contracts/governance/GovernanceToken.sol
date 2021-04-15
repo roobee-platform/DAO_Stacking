@@ -8,7 +8,7 @@ contract GovernanceToken {
     string public constant name = "RoobeeGovernance";
 
     /// @notice EIP-20 token symbol for this token
-    string public constant symbol = "RBG";
+    string public constant symbol = "gROOBEE";
 
     /// @notice EIP-20 token decimals for this token
     uint8 public constant decimals = 18;
@@ -74,7 +74,7 @@ contract GovernanceToken {
      * @param newOwner The account which will become new owner
      */
     function setOwner(address newOwner) external {
-        require(msg.sender == owner, "Comp::setOwner: only owner can set new owner");
+        require(msg.sender == owner, "Roobee::setOwner: only owner can set new owner");
         owner = newOwner;
     }
 
@@ -84,11 +84,11 @@ contract GovernanceToken {
      * @param amount The amount of tokens to be minted
      */
     function mint(address receiver, uint96 amount) external {
-        require(msg.sender == owner, "Comp::mint: only owner can mint tokens"); 
-        require(receiver != address(0), "Comp::mint: cannot mint to zero address");
+        require(msg.sender == owner, "Roobee::mint: only owner can mint tokens"); 
+        require(receiver != address(0), "Roobee::mint: cannot mint to zero address");
 
-        balances[receiver] = add96(balances[receiver], amount, "Comp::mint: balance overflows");
-        totalSupply = add96(totalSupply, amount,  "Comp::mint: totalSupply overflows");
+        balances[receiver] = add96(balances[receiver], amount, "Roobee::mint: balance overflows");
+        totalSupply = add96(totalSupply, amount,  "Roobee::mint: totalSupply overflows");
         emit Mint(receiver, amount);
 
         _moveDelegates(address(0), delegates[receiver], amount);
@@ -100,11 +100,11 @@ contract GovernanceToken {
      * @param amount The amount of tokens to be burned
      */
     function burn(address holder, uint96 amount) external {
-        require(msg.sender == owner, "Comp::mint: only owner can burn tokens"); 
-        require(holder != address(0), "Comp::burn: cannot burn from zero address");
+        require(msg.sender == owner, "Roobee::mint: only owner can burn tokens"); 
+        require(holder != address(0), "Roobee::burn: cannot burn from zero address");
 
-        balances[holder] = sub96(balances[holder], amount, "Comp::burn: balance underflows");
-        totalSupply = sub96(totalSupply, amount,  "Comp::mint: totalSupply underflows");
+        balances[holder] = sub96(balances[holder], amount, "Roobee::burn: balance underflows");
+        totalSupply = sub96(totalSupply, amount,  "Roobee::mint: totalSupply underflows");
         emit Burn(holder, amount);
 
         _moveDelegates(delegates[holder], address(0), amount);
@@ -141,9 +141,9 @@ contract GovernanceToken {
         bytes32 structHash = keccak256(abi.encode(DELEGATION_TYPEHASH, delegatee, nonce, expiry));
         bytes32 digest = keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
         address signatory = ecrecover(digest, v, r, s);
-        require(signatory != address(0), "Comp::delegateBySig: invalid signature");
-        require(nonce == nonces[signatory]++, "Comp::delegateBySig: invalid nonce");
-        require(now <= expiry, "Comp::delegateBySig: signature expired");
+        require(signatory != address(0), "Roobee::delegateBySig: invalid signature");
+        require(nonce == nonces[signatory]++, "Roobee::delegateBySig: invalid nonce");
+        require(now <= expiry, "Roobee::delegateBySig: signature expired");
         return _delegate(signatory, delegatee);
     }
 
@@ -165,7 +165,7 @@ contract GovernanceToken {
      * @return The number of votes the account had as of the given block
      */
     function getPriorVotes(address account, uint blockNumber) public view returns (uint96) {
-        require(blockNumber < block.number, "Comp::getPriorVotes: not yet determined");
+        require(blockNumber < block.number, "Roobee::getPriorVotes: not yet determined");
 
         uint32 nCheckpoints = numCheckpoints[account];
         if (nCheckpoints == 0) {
@@ -214,21 +214,21 @@ contract GovernanceToken {
             if (srcRep != address(0)) {
                 uint32 srcRepNum = numCheckpoints[srcRep];
                 uint96 srcRepOld = srcRepNum > 0 ? checkpoints[srcRep][srcRepNum - 1].votes : 0;
-                uint96 srcRepNew = sub96(srcRepOld, amount, "Comp::_moveVotes: vote amount underflows");
+                uint96 srcRepNew = sub96(srcRepOld, amount, "Roobee::_moveVotes: vote amount underflows");
                 _writeCheckpoint(srcRep, srcRepNum, srcRepOld, srcRepNew);
             }
 
             if (dstRep != address(0)) {
                 uint32 dstRepNum = numCheckpoints[dstRep];
                 uint96 dstRepOld = dstRepNum > 0 ? checkpoints[dstRep][dstRepNum - 1].votes : 0;
-                uint96 dstRepNew = add96(dstRepOld, amount, "Comp::_moveVotes: vote amount overflows");
+                uint96 dstRepNew = add96(dstRepOld, amount, "Roobee::_moveVotes: vote amount overflows");
                 _writeCheckpoint(dstRep, dstRepNum, dstRepOld, dstRepNew);
             }
         }
     }
 
     function _writeCheckpoint(address delegatee, uint32 nCheckpoints, uint96 oldVotes, uint96 newVotes) internal {
-        uint32 blockNumber = safe32(block.number, "Comp::_writeCheckpoint: block number exceeds 32 bits");
+        uint32 blockNumber = safe32(block.number, "Roobee::_writeCheckpoint: block number exceeds 32 bits");
 
         if (nCheckpoints > 0 && checkpoints[delegatee][nCheckpoints - 1].fromBlock == blockNumber) {
             checkpoints[delegatee][nCheckpoints - 1].votes = newVotes;
