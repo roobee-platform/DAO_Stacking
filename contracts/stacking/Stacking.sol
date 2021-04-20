@@ -35,7 +35,6 @@ contract DAOStacking is ReentrancyGuardUpgradeable, OwnableUpgradeable {
     mapping (address => uint256) private _unlockedBalances;
     mapping(address => Lock[]) private addressStakeLocks;
 
-
     struct Lock {
         uint endTimestamp;
         uint amount;
