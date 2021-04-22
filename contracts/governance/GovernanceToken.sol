@@ -16,8 +16,11 @@ contract GovernanceToken {
     /// @notice Total number of tokens in circulation
     uint96 public totalSupply = 0;
 
-    /// @notice Account allowed to mint and burn tokens
+    /// @notice Account that can set minter
     address public owner;
+
+    /// @notice Account allowed to mint and burn tokens
+    address public minter;
 
     /// @notice Allowance amounts on behalf of others
     mapping (address => mapping (address => uint96)) internal allowances;
@@ -67,6 +70,7 @@ contract GovernanceToken {
      */
     constructor(address owner_) public {
         owner = owner_;
+        minter = owner_;
     }
 
     /**
@@ -79,12 +83,21 @@ contract GovernanceToken {
     }
 
     /**
+     * @notice Changes minter of the contract
+     * @param newMinter The account which will become new minter
+     */
+    function setMinter(address newMinter) external {
+        require(msg.sender == owner, "Roobee::setMinter: only owner can set new minter");
+        minter = newMinter;
+    }
+
+    /**
      * @notice Mint tokens to account
      * @param receiver The address of the account to get minted tokens
      * @param amount The amount of tokens to be minted
      */
     function mint(address receiver, uint96 amount) external {
-        require(msg.sender == owner, "Roobee::mint: only owner can mint tokens"); 
+        require(msg.sender == minter, "Roobee::mint: only minter can mint tokens"); 
         require(receiver != address(0), "Roobee::mint: cannot mint to zero address");
 
         balances[receiver] = add96(balances[receiver], amount, "Roobee::mint: balance overflows");
@@ -100,7 +113,7 @@ contract GovernanceToken {
      * @param amount The amount of tokens to be burned
      */
     function burn(address holder, uint96 amount) external {
-        require(msg.sender == owner, "Roobee::mint: only owner can burn tokens"); 
+        require(msg.sender == minter, "Roobee::burn: only minter can burn tokens"); 
         require(holder != address(0), "Roobee::burn: cannot burn from zero address");
 
         balances[holder] = sub96(balances[holder], amount, "Roobee::burn: balance underflows");

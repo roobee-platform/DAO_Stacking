@@ -42,6 +42,62 @@ describe('Governance Token', () => {
     });
   });
 
+  describe('minting and burning', () => {
+    it('Only minter can mint', async () => {
+      await expectRevert(
+        govToken.connect(a1).mint(root.address, 1000),
+        'Roobee::mint: only minter can mint tokens'
+      );
+    });
+
+    it('Only minter can burn', async () => {
+      await govToken.mint(root.address, 1000);
+      await expectRevert(
+        govToken.connect(a1).burn(root.address, 1000),
+        'Roobee::burn: only minter can burn tokens'
+      );
+    });
+
+    it('Minting changes balance and total supply correctly', async () => {
+      await govToken.mint(a1.address, 1000);
+      expect(await govToken.balanceOf(a1.address)).equal(1000);
+      expect(await govToken.totalSupply()).equal('10000000000000000000001000');
+    });
+
+    it('Can\'t burn below balance', async () => {
+      await expectRevert(
+        govToken.burn(a1.address, 1000),
+        'Roobee::burn: balance underflows'
+      );
+    });
+
+    it('Burning tokens changes balance and total supply', async () => {
+      await govToken.burn(root.address, '10000000000000000000000000');
+      expect(await govToken.balanceOf(root.address)).equal(0);
+      expect(await govToken.totalSupply()).equal(0);
+    });
+  });
+
+  describe('roles', () => {
+    it('Only owner can set new minter', async () => {
+      await expectRevert(
+        govToken.connect(a1).setMinter(a1.address),
+        'Roobee::setMinter: only owner can set new minter'
+      );
+      await govToken.setMinter(a1.address);
+      expect(await govToken.minter()).equal(a1.address);
+    });
+
+    it('Only owner can set new owner', async () => {
+      await expectRevert(
+        govToken.connect(a1).setOwner(a1.address),
+        'Roobee::setOwner: only owner can set new owner'
+      );
+      await govToken.setOwner(a1.address);
+      expect(await govToken.owner()).equal(a1.address);
+    });
+  });
+
   describe('delegateBySig', () => {
     const Domain = (govToken) => ({ name, chainId, verifyingContract: govToken.address });
     const Types = {

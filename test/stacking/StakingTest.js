@@ -33,7 +33,7 @@ describe("Stacking Contract", function () {
 
         roobeeStacking = await DAOStacking.deploy();
         roobeeStackingAddress = await roobeeStacking.address;
-        await gToken.setOwner(roobeeStackingAddress);
+        await gToken.setMinter(roobeeStackingAddress);
 
         await roobeeStacking.init(stakingTokenAddress, stakingTokenAddress, gTokenAddress, 100000, 10, 10);
         await stakingToken.transfer(roobeeStackingAddress, 100000000000000)
