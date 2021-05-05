@@ -7,12 +7,6 @@ contract GovernorAlpha {
     /// @notice The name of this contract
     string public constant name = "Roobee Governor Alpha";
 
-    /// @notice The number of votes in support of a proposal required in order for a quorum to be reached and for a vote to succeed
-    function quorumVotes() public pure returns (uint) { return 400000e18; } // 400,000 = 4% of Roobee
-
-    /// @notice The number of votes required in order for a voter to become a proposer
-    function proposalThreshold() public pure returns (uint) { return 100000e18; } // 100,000 = 1% of Roobee
-
     /// @notice The maximum number of actions that can be included in a proposal
     function proposalMaxOperations() public pure returns (uint) { return 10; } // 10 actions
 
@@ -33,6 +27,12 @@ contract GovernorAlpha {
 
     /// @notice The total number of proposals
     uint public proposalCount;
+
+    /// @notice The number of votes required in order for a voter to become a proposer
+    uint public proposalThreshold;
+
+    /// @notice The number of votes in support of a proposal required in order for a quorum to be reached and for a vote to succeed
+    uint public quorumVotes;
 
     struct Proposal {
         /// @notice Unique id for looking up a proposal
@@ -129,14 +129,17 @@ contract GovernorAlpha {
     /// @notice An event emitted when a proposal has been executed in the Timelock
     event ProposalExecuted(uint id);
 
-    constructor(address timelock_, address gRoobee_, address guardian_) public {
+    constructor(address timelock_, address gRoobee_, address guardian_, uint proposalThreshold_, uint quorumVotes_) public {
         timelock = TimelockInterface(timelock_);
         gRoobee = GovernanceTokenInterface(gRoobee_);
         guardian = guardian_;
+
+        proposalThreshold = proposalThreshold_;
+        quorumVotes = quorumVotes_;
     }
 
     function propose(address[] memory targets, uint[] memory values, string[] memory signatures, bytes[] memory calldatas, string memory description) public returns (uint) {        
-        require(gRoobee.getPriorVotes(msg.sender, sub256(block.number, 1)) > proposalThreshold(), "GovernorAlpha::propose: proposer votes below proposal threshold");
+        require(gRoobee.getPriorVotes(msg.sender, sub256(block.number, 1)) > proposalThreshold, "GovernorAlpha::propose: proposer votes below proposal threshold");
         require(targets.length == values.length && targets.length == signatures.length && targets.length == calldatas.length, "GovernorAlpha::propose: proposal function information arity mismatch");
         require(targets.length != 0, "GovernorAlpha::propose: must provide actions");
         require(targets.length <= proposalMaxOperations(), "GovernorAlpha::propose: too many actions");
@@ -206,7 +209,7 @@ contract GovernorAlpha {
         require(state != ProposalState.Executed, "GovernorAlpha::cancel: cannot cancel executed proposal");
 
         Proposal storage proposal = proposals[proposalId];
-        require(msg.sender == guardian || gRoobee.getPriorVotes(proposal.proposer, sub256(block.number, 1)) < proposalThreshold(), "GovernorAlpha::cancel: proposer above threshold");
+        require(msg.sender == guardian || gRoobee.getPriorVotes(proposal.proposer, sub256(block.number, 1)) < proposalThreshold, "GovernorAlpha::cancel: proposer above threshold");
 
         proposal.canceled = true;
         for (uint i = 0; i < proposal.targets.length; i++) {
@@ -234,7 +237,7 @@ contract GovernorAlpha {
             return ProposalState.Pending;
         } else if (block.number <= proposal.endBlock) {
             return ProposalState.Active;
-        } else if (proposal.forVotes <= proposal.againstVotes || proposal.forVotes < quorumVotes()) {
+        } else if (proposal.forVotes <= proposal.againstVotes || proposal.forVotes < quorumVotes) {
             return ProposalState.Defeated;
         } else if (proposal.eta == 0) {
             return ProposalState.Succeeded;
@@ -278,6 +281,16 @@ contract GovernorAlpha {
         receipt.votes = votes;
 
         emit VoteCast(voter, proposalId, support, votes);
+    }
+
+    function __setProposalThreshold(uint proposalThreshold_) public {
+        require(msg.sender == guardian, "GovernorAlpha::__setProposalThreshold: sender must be gov guardian");
+        proposalThreshold = proposalThreshold_;
+    }
+
+    function __setQuorumVotes(uint quorumVotes_) public {
+        require(msg.sender == guardian, "GovernorAlpha::__setQuorumVotes: sender must be gov guardian");
+        quorumVotes = quorumVotes_;
     }
 
     function __acceptAdmin() public {

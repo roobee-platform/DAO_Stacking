@@ -24,7 +24,13 @@ describe('GovernorAlpha Propose', () => {
     const GovernorAlpha = await ethers.getContractFactory("GovernorAlpha");
 
     govToken = await GovernanceToken.deploy(root.address);
-    gov = await GovernorAlpha.deploy(address(0), govToken.address, address(0));
+    gov = await GovernorAlpha.deploy(
+      address(0), 
+      govToken.address, 
+      root.address, 
+      etherMantissa(400000).toString(),
+      etherMantissa(1000000).toString()
+    );
   });
 
   let trivialProposal, targets, values, signatures, callDatas;
@@ -160,4 +166,24 @@ describe('GovernorAlpha Propose', () => {
       expect(tx.events[0].event).equal("ProposalCreated")
     });
   });
+
+  describe("Change proposal settings", async () => {
+    it("set proposal threshold", async () => {
+      await expectRevert(
+        gov.connect(acct).__setProposalThreshold(1000),
+        "GovernorAlpha::__setProposalThreshold: sender must be gov guardian"
+      )
+      await gov.connect(root).__setProposalThreshold(1000);
+      expect(await gov.proposalThreshold()).equal(1000); 
+    });
+
+    it("set quorum votes", async () => {
+      await expectRevert(
+        gov.connect(acct).__setQuorumVotes(1000),
+        "GovernorAlpha::__setQuorumVotes: sender must be gov guardian"
+      )
+      await gov.connect(root).__setQuorumVotes(1000);
+      expect(await gov.quorumVotes()).equal(1000); 
+    });
+  })
 });
