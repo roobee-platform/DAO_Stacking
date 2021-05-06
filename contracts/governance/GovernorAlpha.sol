@@ -10,12 +10,6 @@ contract GovernorAlpha {
     /// @notice The maximum number of actions that can be included in a proposal
     function proposalMaxOperations() public pure returns (uint) { return 10; } // 10 actions
 
-    /// @notice The delay before voting on a proposal may take place, once proposed
-    function votingDelay() public pure returns (uint) { return 1; } // 1 block
-
-    /// @notice The duration of voting on a proposal, in blocks
-    function votingPeriod() public pure returns (uint) { return 17280; } // ~3 days in blocks (assuming 15s blocks)
-
     /// @notice The address of the Roobee Protocol Timelock
     TimelockInterface public timelock;
 
@@ -33,6 +27,12 @@ contract GovernorAlpha {
 
     /// @notice The number of votes in support of a proposal required in order for a quorum to be reached and for a vote to succeed
     uint public quorumVotes;
+
+    /// @notice The delay before voting on a proposal may take place, once proposed
+    uint public votingDelay;
+
+    /// @notice The duration of voting on a proposal, in blocks
+    uint public votingPeriod;
 
     struct Proposal {
         /// @notice Unique id for looking up a proposal
@@ -129,13 +129,15 @@ contract GovernorAlpha {
     /// @notice An event emitted when a proposal has been executed in the Timelock
     event ProposalExecuted(uint id);
 
-    constructor(address timelock_, address gRoobee_, address guardian_, uint proposalThreshold_, uint quorumVotes_) public {
+    constructor(address timelock_, address gRoobee_, address guardian_, uint proposalThreshold_, uint quorumVotes_, uint votingDelay_, uint votingPeriod_) public {
         timelock = TimelockInterface(timelock_);
         gRoobee = GovernanceTokenInterface(gRoobee_);
         guardian = guardian_;
 
         proposalThreshold = proposalThreshold_;
         quorumVotes = quorumVotes_;
+        votingDelay = votingDelay_;
+        votingPeriod = votingPeriod_;
     }
 
     function propose(address[] memory targets, uint[] memory values, string[] memory signatures, bytes[] memory calldatas, string memory description) public returns (uint) {        
@@ -151,8 +153,8 @@ contract GovernorAlpha {
           require(proposersLatestProposalState != ProposalState.Pending, "GovernorAlpha::propose: one live proposal per proposer, found an already pending proposal");
         }
 
-        uint startBlock = add256(block.number, votingDelay());
-        uint endBlock = add256(startBlock, votingPeriod());
+        uint startBlock = add256(block.number, votingDelay);
+        uint endBlock = add256(startBlock, votingPeriod);
 
         proposalCount++;
         Proposal memory newProposal = Proposal({
@@ -291,6 +293,16 @@ contract GovernorAlpha {
     function __setQuorumVotes(uint quorumVotes_) public {
         require(msg.sender == guardian, "GovernorAlpha::__setQuorumVotes: sender must be gov guardian");
         quorumVotes = quorumVotes_;
+    }
+
+    function __setVotingDelay(uint votingDelay_) public {
+        require(msg.sender == guardian, "GovernorAlpha::__setVotingDelay: sender must be gov guardian");
+        votingDelay = votingDelay_;
+    }
+
+    function __setVotingPeriod(uint votingPeriod_) public {
+        require(msg.sender == guardian, "GovernorAlpha::__setVotingPeriod: sender must be gov guardian");
+        votingPeriod = votingPeriod_;
     }
 
     function __acceptAdmin() public {

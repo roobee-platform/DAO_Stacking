@@ -29,7 +29,9 @@ describe('GovernorAlpha Propose', () => {
       govToken.address, 
       root.address, 
       etherMantissa(400000).toString(),
-      etherMantissa(1000000).toString()
+      etherMantissa(1000000).toString(),
+      1,
+      17280
     );
   });
 
@@ -184,6 +186,24 @@ describe('GovernorAlpha Propose', () => {
       )
       await gov.connect(root).__setQuorumVotes(1000);
       expect(await gov.quorumVotes()).equal(1000); 
+    });
+
+    it("set voting delay", async () => {
+      await expectRevert(
+        gov.connect(acct).__setVotingDelay(10),
+        "GovernorAlpha::__setVotingDelay: sender must be gov guardian"
+      )
+      await gov.connect(root).__setVotingDelay(10);
+      expect(await gov.votingDelay()).equal(10); 
+    });
+
+    it("set voting period", async () => {
+      await expectRevert(
+        gov.connect(acct).__setVotingPeriod(1000),
+        "GovernorAlpha::__setVotingPeriod: sender must be gov guardian"
+      )
+      await gov.connect(root).__setVotingPeriod(1000);
+      expect(await gov.votingPeriod()).equal(1000); 
     });
   })
 });
