@@ -7,6 +7,30 @@ contract GovernorAlpha {
     /// @notice The name of this contract
     string public constant name = "Roobee Governor Alpha";
 
+    /// @notice The minimum setable proposal threshold
+    uint public constant MIN_PROPOSAL_THRESHOLD = 50000e18; // 50,000 gRoobee
+
+    /// @notice The maximum setable proposal threshold
+    uint public constant MAX_PROPOSAL_THRESHOLD = 400000e18; //400,000 gRoobee
+
+    /// @notice The minimum setable quorum votes
+    uint public constant MIN_QUORUM_VOTES = 100000e18; // 100,000 gRoobee
+
+    /// @notice The maximum setable quorum votes
+    uint public constant MAX_QUORUM_VOTES = 1000000e18; //1,000,000 gRoobee
+
+    /// @notice The minimum setable voting period
+    uint public constant MIN_VOTING_PERIOD = 5760; // About 24 hours
+
+    /// @notice The max setable voting period
+    uint public constant MAX_VOTING_PERIOD = 80640; // About 2 weeks
+
+    /// @notice The min setable voting delay
+    uint public constant MIN_VOTING_DELAY = 1;
+
+    /// @notice The max setable voting delay
+    uint public constant MAX_VOTING_DELAY = 40320; // About 1 week
+
     /// @notice The maximum number of actions that can be included in a proposal
     function proposalMaxOperations() public pure returns (uint) { return 10; } // 10 actions
 
@@ -130,6 +154,11 @@ contract GovernorAlpha {
     event ProposalExecuted(uint id);
 
     constructor(address timelock_, address gRoobee_, address guardian_, uint proposalThreshold_, uint quorumVotes_, uint votingDelay_, uint votingPeriod_) public {
+        require(proposalThreshold_ >= MIN_PROPOSAL_THRESHOLD && proposalThreshold_ <= MAX_PROPOSAL_THRESHOLD, "GovernorAlpha::initialize: invalid proposal threshold");
+        require(quorumVotes_ >= MIN_QUORUM_VOTES && quorumVotes_ <= MAX_QUORUM_VOTES, "GovernorAlpha::initialize: invalid proposal threshold");
+        require(votingDelay_ >= MIN_VOTING_DELAY && votingDelay_ <= MAX_VOTING_DELAY, "GovernorAlpha::initialize: invalid voting delay");
+        require(votingPeriod_ >= MIN_VOTING_PERIOD && votingPeriod_ <= MAX_VOTING_PERIOD, "GovernorAlpha::initialize: invalid voting period");
+
         timelock = TimelockInterface(timelock_);
         gRoobee = GovernanceTokenInterface(gRoobee_);
         guardian = guardian_;
@@ -287,21 +316,25 @@ contract GovernorAlpha {
 
     function __setProposalThreshold(uint proposalThreshold_) public {
         require(msg.sender == guardian, "GovernorAlpha::__setProposalThreshold: sender must be gov guardian");
+        require(proposalThreshold_ >= MIN_PROPOSAL_THRESHOLD && proposalThreshold_ <= MAX_PROPOSAL_THRESHOLD, "GovernorAlpha::__setProposalThreshold: invalid proposal threshold");
         proposalThreshold = proposalThreshold_;
     }
 
     function __setQuorumVotes(uint quorumVotes_) public {
         require(msg.sender == guardian, "GovernorAlpha::__setQuorumVotes: sender must be gov guardian");
+        require(quorumVotes_ >= MIN_QUORUM_VOTES && quorumVotes_ <= MAX_QUORUM_VOTES, "GovernorAlpha::__setQuorumVotes: invalid quorum votes");
         quorumVotes = quorumVotes_;
     }
 
     function __setVotingDelay(uint votingDelay_) public {
         require(msg.sender == guardian, "GovernorAlpha::__setVotingDelay: sender must be gov guardian");
+        require(votingDelay_ >= MIN_VOTING_DELAY && votingDelay_ <= MAX_VOTING_DELAY, "GovernorAlpha::__setVotingDelay: invalid voting delay");
         votingDelay = votingDelay_;
     }
 
     function __setVotingPeriod(uint votingPeriod_) public {
         require(msg.sender == guardian, "GovernorAlpha::__setVotingPeriod: sender must be gov guardian");
+        require(votingPeriod_ >= MIN_VOTING_PERIOD && votingPeriod_ <= MAX_VOTING_PERIOD, "GovernorAlpha::__setVotingPeriod: invalid voting period");
         votingPeriod = votingPeriod_;
     }
 
