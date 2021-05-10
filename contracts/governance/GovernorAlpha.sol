@@ -7,20 +7,32 @@ contract GovernorAlpha {
     /// @notice The name of this contract
     string public constant name = "Roobee Governor Alpha";
 
-    /// @notice The number of votes in support of a proposal required in order for a quorum to be reached and for a vote to succeed
-    function quorumVotes() public pure returns (uint) { return 400000e18; } // 400,000 = 4% of Roobee
+    /// @notice The minimum setable proposal threshold
+    uint public constant MIN_PROPOSAL_THRESHOLD = 50000e18; // 50,000 gRoobee
 
-    /// @notice The number of votes required in order for a voter to become a proposer
-    function proposalThreshold() public pure returns (uint) { return 100000e18; } // 100,000 = 1% of Roobee
+    /// @notice The maximum setable proposal threshold
+    uint public constant MAX_PROPOSAL_THRESHOLD = 400000e18; //400,000 gRoobee
+
+    /// @notice The minimum setable quorum votes
+    uint public constant MIN_QUORUM_VOTES = 100000e18; // 100,000 gRoobee
+
+    /// @notice The maximum setable quorum votes
+    uint public constant MAX_QUORUM_VOTES = 1000000e18; //1,000,000 gRoobee
+
+    /// @notice The minimum setable voting period
+    uint public constant MIN_VOTING_PERIOD = 5760; // About 24 hours
+
+    /// @notice The max setable voting period
+    uint public constant MAX_VOTING_PERIOD = 80640; // About 2 weeks
+
+    /// @notice The min setable voting delay
+    uint public constant MIN_VOTING_DELAY = 1;
+
+    /// @notice The max setable voting delay
+    uint public constant MAX_VOTING_DELAY = 40320; // About 1 week
 
     /// @notice The maximum number of actions that can be included in a proposal
     function proposalMaxOperations() public pure returns (uint) { return 10; } // 10 actions
-
-    /// @notice The delay before voting on a proposal may take place, once proposed
-    function votingDelay() public pure returns (uint) { return 1; } // 1 block
-
-    /// @notice The duration of voting on a proposal, in blocks
-    function votingPeriod() public pure returns (uint) { return 17280; } // ~3 days in blocks (assuming 15s blocks)
 
     /// @notice The address of the Roobee Protocol Timelock
     TimelockInterface public timelock;
@@ -33,6 +45,18 @@ contract GovernorAlpha {
 
     /// @notice The total number of proposals
     uint public proposalCount;
+
+    /// @notice The number of votes required in order for a voter to become a proposer
+    uint public proposalThreshold;
+
+    /// @notice The number of votes in support of a proposal required in order for a quorum to be reached and for a vote to succeed
+    uint public quorumVotes;
+
+    /// @notice The delay before voting on a proposal may take place, once proposed
+    uint public votingDelay;
+
+    /// @notice The duration of voting on a proposal, in blocks
+    uint public votingPeriod;
 
     struct Proposal {
         /// @notice Unique id for looking up a proposal
@@ -129,14 +153,24 @@ contract GovernorAlpha {
     /// @notice An event emitted when a proposal has been executed in the Timelock
     event ProposalExecuted(uint id);
 
-    constructor(address timelock_, address gRoobee_, address guardian_) public {
+    constructor(address timelock_, address gRoobee_, address guardian_, uint proposalThreshold_, uint quorumVotes_, uint votingDelay_, uint votingPeriod_) public {
+        require(proposalThreshold_ >= MIN_PROPOSAL_THRESHOLD && proposalThreshold_ <= MAX_PROPOSAL_THRESHOLD, "GovernorAlpha::initialize: invalid proposal threshold");
+        require(quorumVotes_ >= MIN_QUORUM_VOTES && quorumVotes_ <= MAX_QUORUM_VOTES, "GovernorAlpha::initialize: invalid proposal threshold");
+        require(votingDelay_ >= MIN_VOTING_DELAY && votingDelay_ <= MAX_VOTING_DELAY, "GovernorAlpha::initialize: invalid voting delay");
+        require(votingPeriod_ >= MIN_VOTING_PERIOD && votingPeriod_ <= MAX_VOTING_PERIOD, "GovernorAlpha::initialize: invalid voting period");
+
         timelock = TimelockInterface(timelock_);
         gRoobee = GovernanceTokenInterface(gRoobee_);
         guardian = guardian_;
+
+        proposalThreshold = proposalThreshold_;
+        quorumVotes = quorumVotes_;
+        votingDelay = votingDelay_;
+        votingPeriod = votingPeriod_;
     }
 
     function propose(address[] memory targets, uint[] memory values, string[] memory signatures, bytes[] memory calldatas, string memory description) public returns (uint) {        
-        require(gRoobee.getPriorVotes(msg.sender, sub256(block.number, 1)) > proposalThreshold(), "GovernorAlpha::propose: proposer votes below proposal threshold");
+        require(gRoobee.getPriorVotes(msg.sender, sub256(block.number, 1)) > proposalThreshold, "GovernorAlpha::propose: proposer votes below proposal threshold");
         require(targets.length == values.length && targets.length == signatures.length && targets.length == calldatas.length, "GovernorAlpha::propose: proposal function information arity mismatch");
         require(targets.length != 0, "GovernorAlpha::propose: must provide actions");
         require(targets.length <= proposalMaxOperations(), "GovernorAlpha::propose: too many actions");
@@ -148,8 +182,8 @@ contract GovernorAlpha {
           require(proposersLatestProposalState != ProposalState.Pending, "GovernorAlpha::propose: one live proposal per proposer, found an already pending proposal");
         }
 
-        uint startBlock = add256(block.number, votingDelay());
-        uint endBlock = add256(startBlock, votingPeriod());
+        uint startBlock = add256(block.number, votingDelay);
+        uint endBlock = add256(startBlock, votingPeriod);
 
         proposalCount++;
         Proposal memory newProposal = Proposal({
@@ -206,7 +240,7 @@ contract GovernorAlpha {
         require(state != ProposalState.Executed, "GovernorAlpha::cancel: cannot cancel executed proposal");
 
         Proposal storage proposal = proposals[proposalId];
-        require(msg.sender == guardian || gRoobee.getPriorVotes(proposal.proposer, sub256(block.number, 1)) < proposalThreshold(), "GovernorAlpha::cancel: proposer above threshold");
+        require(msg.sender == guardian || gRoobee.getPriorVotes(proposal.proposer, sub256(block.number, 1)) < proposalThreshold, "GovernorAlpha::cancel: proposer above threshold");
 
         proposal.canceled = true;
         for (uint i = 0; i < proposal.targets.length; i++) {
@@ -234,7 +268,7 @@ contract GovernorAlpha {
             return ProposalState.Pending;
         } else if (block.number <= proposal.endBlock) {
             return ProposalState.Active;
-        } else if (proposal.forVotes <= proposal.againstVotes || proposal.forVotes < quorumVotes()) {
+        } else if (proposal.forVotes <= proposal.againstVotes || proposal.forVotes < quorumVotes) {
             return ProposalState.Defeated;
         } else if (proposal.eta == 0) {
             return ProposalState.Succeeded;
@@ -278,6 +312,30 @@ contract GovernorAlpha {
         receipt.votes = votes;
 
         emit VoteCast(voter, proposalId, support, votes);
+    }
+
+    function __setProposalThreshold(uint proposalThreshold_) public {
+        require(msg.sender == guardian, "GovernorAlpha::__setProposalThreshold: sender must be gov guardian");
+        require(proposalThreshold_ >= MIN_PROPOSAL_THRESHOLD && proposalThreshold_ <= MAX_PROPOSAL_THRESHOLD, "GovernorAlpha::__setProposalThreshold: invalid proposal threshold");
+        proposalThreshold = proposalThreshold_;
+    }
+
+    function __setQuorumVotes(uint quorumVotes_) public {
+        require(msg.sender == guardian, "GovernorAlpha::__setQuorumVotes: sender must be gov guardian");
+        require(quorumVotes_ >= MIN_QUORUM_VOTES && quorumVotes_ <= MAX_QUORUM_VOTES, "GovernorAlpha::__setQuorumVotes: invalid quorum votes");
+        quorumVotes = quorumVotes_;
+    }
+
+    function __setVotingDelay(uint votingDelay_) public {
+        require(msg.sender == guardian, "GovernorAlpha::__setVotingDelay: sender must be gov guardian");
+        require(votingDelay_ >= MIN_VOTING_DELAY && votingDelay_ <= MAX_VOTING_DELAY, "GovernorAlpha::__setVotingDelay: invalid voting delay");
+        votingDelay = votingDelay_;
+    }
+
+    function __setVotingPeriod(uint votingPeriod_) public {
+        require(msg.sender == guardian, "GovernorAlpha::__setVotingPeriod: sender must be gov guardian");
+        require(votingPeriod_ >= MIN_VOTING_PERIOD && votingPeriod_ <= MAX_VOTING_PERIOD, "GovernorAlpha::__setVotingPeriod: invalid voting period");
+        votingPeriod = votingPeriod_;
     }
 
     function __acceptAdmin() public {

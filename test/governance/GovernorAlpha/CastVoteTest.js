@@ -24,7 +24,7 @@ describe("GovernorAlpha CastVote", () => {
     chainId = hre.network.config.chainId;
 
     const GovernanceToken = await ethers.getContractFactory("GovernanceToken");
-    const GovernorAlpha = await ethers.getContractFactory("GovernorAlpha");
+    const GovernorAlpha = await ethers.getContractFactory("GovernorExpress");
 
     govToken = await GovernanceToken.deploy(root.address);
     gov = await GovernorAlpha.deploy(address(0), govToken.address, root.address);

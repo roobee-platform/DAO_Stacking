@@ -24,7 +24,15 @@ describe('GovernorAlpha Propose', () => {
     const GovernorAlpha = await ethers.getContractFactory("GovernorAlpha");
 
     govToken = await GovernanceToken.deploy(root.address);
-    gov = await GovernorAlpha.deploy(address(0), govToken.address, address(0));
+    gov = await GovernorAlpha.deploy(
+      address(0), 
+      govToken.address, 
+      root.address, 
+      etherMantissa(400000).toString(),
+      etherMantissa(1000000).toString(),
+      1,
+      17280
+    );
   });
 
   let trivialProposal, targets, values, signatures, callDatas;
@@ -160,4 +168,58 @@ describe('GovernorAlpha Propose', () => {
       expect(tx.events[0].event).equal("ProposalCreated")
     });
   });
+
+  describe("Change proposal settings", async () => {
+    it("set proposal threshold", async () => {
+      await expectRevert(
+        gov.connect(acct).__setProposalThreshold(1000),
+        "GovernorAlpha::__setProposalThreshold: sender must be gov guardian"
+      )
+      await expectRevert(
+        gov.__setProposalThreshold(1000),
+        "GovernorAlpha::__setProposalThreshold: invalid proposal threshold"
+      )
+      await gov.__setProposalThreshold(etherMantissa(50000).toString());
+      expect(await gov.proposalThreshold()).equal(etherMantissa(50000).toString()); 
+    });
+
+    it("set quorum votes", async () => {
+      await expectRevert(
+        gov.connect(acct).__setQuorumVotes(1000),
+        "GovernorAlpha::__setQuorumVotes: sender must be gov guardian"
+      )
+      await expectRevert(
+        gov.__setQuorumVotes(1000),
+        "GovernorAlpha::__setQuorumVotes: invalid quorum votes"
+      )
+      await gov.__setQuorumVotes(etherMantissa(300000).toString());
+      expect(await gov.quorumVotes()).equal(etherMantissa(300000).toString()); 
+    });
+
+    it("set voting delay", async () => {
+      await expectRevert(
+        gov.connect(acct).__setVotingDelay(10),
+        "GovernorAlpha::__setVotingDelay: sender must be gov guardian"
+      )
+      await expectRevert(
+        gov.__setVotingDelay(100000),
+        "GovernorAlpha::__setVotingDelay: invalid voting delay"
+      )
+      await gov.__setVotingDelay(10);
+      expect(await gov.votingDelay()).equal(10); 
+    });
+
+    it("set voting period", async () => {
+      await expectRevert(
+        gov.connect(acct).__setVotingPeriod(1000),
+        "GovernorAlpha::__setVotingPeriod: sender must be gov guardian"
+      )
+      await expectRevert(
+        gov.__setVotingPeriod(1000),
+        "GovernorAlpha::__setVotingPeriod: invalid voting period"
+      )
+      await gov.__setVotingPeriod(6000);
+      expect(await gov.votingPeriod()).equal(6000); 
+    });
+  })
 });
