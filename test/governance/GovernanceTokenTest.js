@@ -13,7 +13,7 @@ const {
 
 describe('Governance Token', () => {
   const name = 'RoobeeGovernance';
-  const symbol = 'gROOBEE';
+  const symbol = 'xROOBEE';
 
   let root, a1, accounts, chainId;
   let govToken;
