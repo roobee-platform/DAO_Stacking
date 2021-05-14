@@ -117,13 +117,6 @@ describe('GovernorAlpha Propose', () => {
         );
       });
 
-      it("or if that length is zero or greater than Max Operations.", async () => {
-        await expectRevert(
-          gov.propose([], [], [], [], "do nothing"),
-          "revert GovernorAlpha::propose: must provide actions"
-        );
-      });
-
       describe("Additionally, if there exists a pending or active proposal from the same proposer, we must revert.", () => {
         it("reverts with pending", async () => {
           await enfranchise(govToken, accounts[0], '1000000');
