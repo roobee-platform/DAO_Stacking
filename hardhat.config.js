@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const INFURA_API_KEY = process.env.INFURA_API_KEY;
 const KOVAN_PRIVATE_KEY = process.env.KOVAN_PRIVATE_KEY;
+const ROPSTEN_PRIVATE_KEY = process.env.ROPSTEN_PRIVATE_KEY;
 const RINKEBY_PRIVATE_KEY = process.env.RINKEBY_PRIVATE_KEY;
 const MAINNET_PRIVATE_KEY = process.env.MAINNET_PRIVATE_KEY;
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
@@ -48,6 +49,10 @@ module.exports = {
     rinkeby: {
       url: `https://rinkeby.infura.io/v3/${INFURA_API_KEY}`,
       accounts: RINKEBY_PRIVATE_KEY ? [RINKEBY_PRIVATE_KEY] : []
+    },
+    ropsten: {
+      url: `https://ropsten.infura.io/v3/${INFURA_API_KEY}`,
+      accounts: ROPSTEN_PRIVATE_KEY ? [ROPSTEN_PRIVATE_KEY] : []
     },
     BSCTest: {
       url: 'https://data-seed-prebsc-1-s1.binance.org:8545/',

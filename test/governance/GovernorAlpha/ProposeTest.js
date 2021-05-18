@@ -28,8 +28,8 @@ describe('GovernorAlpha Propose', () => {
       address(0), 
       govToken.address, 
       root.address, 
-      etherMantissa(400000).toString(),
-      etherMantissa(1000000).toString(),
+      etherMantissa(2000000).toString(),
+      etherMantissa(8000000).toString(),
       1,
       17280
     );
@@ -43,7 +43,7 @@ describe('GovernorAlpha Propose', () => {
     signatures = ["getBalanceOf(address)"];
     callDatas = [encodeParameters(['address'], [acct.address])];
 
-    await enfranchise(govToken, root, '1000000');
+    await enfranchise(govToken, root, '20000000');
     await gov.propose(targets, values, signatures, callDatas, "do nothing");
 
     proposalBlock = +(await ethers.provider.getBlockNumber());
@@ -117,16 +117,9 @@ describe('GovernorAlpha Propose', () => {
         );
       });
 
-      it("or if that length is zero or greater than Max Operations.", async () => {
-        await expectRevert(
-          gov.propose([], [], [], [], "do nothing"),
-          "revert GovernorAlpha::propose: must provide actions"
-        );
-      });
-
       describe("Additionally, if there exists a pending or active proposal from the same proposer, we must revert.", () => {
         it("reverts with pending", async () => {
-          await enfranchise(govToken, accounts[0], '1000000');
+          await enfranchise(govToken, accounts[0], '20000000');
           await mineBlock(2);
 
           await stopMining();
@@ -151,7 +144,7 @@ describe('GovernorAlpha Propose', () => {
     });
 
     it("This function returns the id of the newly created proposal. # proposalId(n) = succ(proposalId(n-1))", async () => {
-      await enfranchise(govToken, accounts[2], '400001');
+      await enfranchise(govToken, accounts[2], '2000001');
 
       await mineBlock();
       const nextProposalId = await gov.connect(accounts[2]).callStatic.propose(targets, values, signatures, callDatas, "yoot");
@@ -160,7 +153,7 @@ describe('GovernorAlpha Propose', () => {
     });
 
     it("emits log with id and description", async () => {
-      await enfranchise(govToken, accounts[3], '400001');
+      await enfranchise(govToken, accounts[3], '2000001');
 
       await mineBlock();
       const tx = await complete(gov.connect(accounts[3]).propose(targets, values, signatures, callDatas, "yoot"));
@@ -172,28 +165,28 @@ describe('GovernorAlpha Propose', () => {
   describe("Change proposal settings", async () => {
     it("set proposal threshold", async () => {
       await expectRevert(
-        gov.connect(acct).__setProposalThreshold(1000),
+        gov.connect(acct).__setProposalThreshold(etherMantissa(3000000).toString()),
         "GovernorAlpha::__setProposalThreshold: sender must be gov guardian"
       )
       await expectRevert(
         gov.__setProposalThreshold(1000),
         "GovernorAlpha::__setProposalThreshold: invalid proposal threshold"
       )
-      await gov.__setProposalThreshold(etherMantissa(50000).toString());
-      expect(await gov.proposalThreshold()).equal(etherMantissa(50000).toString()); 
+      await gov.__setProposalThreshold(etherMantissa(3000000).toString());
+      expect(await gov.proposalThreshold()).equal(etherMantissa(3000000).toString()); 
     });
 
     it("set quorum votes", async () => {
       await expectRevert(
-        gov.connect(acct).__setQuorumVotes(1000),
+        gov.connect(acct).__setQuorumVotes(etherMantissa(6000000).toString()),
         "GovernorAlpha::__setQuorumVotes: sender must be gov guardian"
       )
       await expectRevert(
         gov.__setQuorumVotes(1000),
         "GovernorAlpha::__setQuorumVotes: invalid quorum votes"
       )
-      await gov.__setQuorumVotes(etherMantissa(300000).toString());
-      expect(await gov.quorumVotes()).equal(etherMantissa(300000).toString()); 
+      await gov.__setQuorumVotes(etherMantissa(6000000).toString());
+      expect(await gov.quorumVotes()).equal(etherMantissa(6000000).toString()); 
     });
 
     it("set voting delay", async () => {
@@ -211,15 +204,15 @@ describe('GovernorAlpha Propose', () => {
 
     it("set voting period", async () => {
       await expectRevert(
-        gov.connect(acct).__setVotingPeriod(1000),
+        gov.connect(acct).__setVotingPeriod(10000),
         "GovernorAlpha::__setVotingPeriod: sender must be gov guardian"
       )
       await expectRevert(
         gov.__setVotingPeriod(1000),
         "GovernorAlpha::__setVotingPeriod: invalid voting period"
       )
-      await gov.__setVotingPeriod(6000);
-      expect(await gov.votingPeriod()).equal(6000); 
+      await gov.__setVotingPeriod(10000);
+      expect(await gov.votingPeriod()).equal(10000); 
     });
   })
 });
