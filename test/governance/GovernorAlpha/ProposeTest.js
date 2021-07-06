@@ -204,15 +204,15 @@ describe('GovernorAlpha Propose', () => {
 
     it("set voting period", async () => {
       await expectRevert(
-        gov.connect(acct).__setVotingPeriod(10000),
+        gov.connect(acct).__setVotingPeriod(20000),
         "GovernorAlpha::__setVotingPeriod: sender must be gov guardian"
       )
       await expectRevert(
         gov.__setVotingPeriod(1000),
         "GovernorAlpha::__setVotingPeriod: invalid voting period"
       )
-      await gov.__setVotingPeriod(10000);
-      expect(await gov.votingPeriod()).equal(10000); 
+      await gov.__setVotingPeriod(20000);
+      expect(await gov.votingPeriod()).equal(20000);
     });
   })
 });

@@ -11,39 +11,40 @@ async function main() {
     Staking  = await ethers.getContractFactory('DAOStacking');
     Timelock = await ethers.getContractFactory('Timelock');
     
-    token = await Token.attach(''/*ROOBEE ADDRESS*/);
+    token = await Token.attach('0xe64f5cb844946c1f102bd25bbd87a5ab4ae89fbe'/*ROOBEE ADDRESS*/);
     console.log(`REACT_APP_ROOBEE_ADDRESS=${token.address}`);
 
     // Initialize contracts
     govToken = await GovernanceToken.deploy(account.address, {gasLimit: 8000000});
     console.log(`REACT_APP_GOV_ROOBEE_ADDRESS=${govToken.address}`);
 
-    timelock = await Timelock.deploy(account.address, 10/*DELAY VALUE*/);
+    timelock = await Timelock.deploy(account.address, 172800/*DELAY VALUE*/, {gasLimit: 8000000});
 
     governor = await Governor.deploy(
         timelock.address, 
         govToken.address,
         account.address,
-        0/*PROPOSAL THRESHOLD*/,
-        0/*QUORUM VOTES*/,
-        0/*VOTING DELAY*/,
-        0/*VOTING PERIOD*/,
+        etherMantissa(2000000).toString()/*PROPOSAL THRESHOLD*/,
+        etherMantissa(4000000).toString()/*QUORUM VOTES*/,
+        720/*VOTING DELAY*/,
+        86400/*VOTING PERIOD*/,
         {gasLimit: 8000000}
     );
     console.log(`REACT_APP_GOVERNOR_ADDRESS=${governor.address}`);
 
-    staking = await Staking.deploy({gasLimit: 8000000});
+
+    staking = await upgrades.deployProxy(Staking,
+        [
+            govToken.address,
+            token.address,
+            govToken.address,
+            172800,
+            10,
+            10
+        ],
+        { initializer: 'init' });
+
     console.log(`REACT_APP_STAKING_ADDRESS=${staking.address}`)
-    //staking = await Staking.attach('0x9DAa0188d537fB17ef265efbd64f1B8a41d4665b');
-    await staking.init(
-        govToken.address, 
-        token.address, 
-        govToken.address,
-        172800/*REWARDS DURATION */, 
-        10/*EXCHANGRE RATE*/, 
-        10/*MAX LOCKS*/,
-        {gasLimit: 8000000}
-    );
 
     await govToken.setMinter(staking.address, {gasLimit: 8000000});
 

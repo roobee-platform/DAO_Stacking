@@ -20,16 +20,16 @@ contract GovernorAlpha {
     uint public constant MAX_QUORUM_VOTES = 25000000e18; // 25,000,000 xRoobee
 
     /// @notice The minimum setable voting period
-    uint public constant MIN_VOTING_PERIOD = 6600; // About 1 day
+    uint public constant MIN_VOTING_PERIOD = 17280; // About 1 day
 
     /// @notice The max setable voting period
-    uint public constant MAX_VOTING_PERIOD = 92400; // About 2 weeks
+    uint public constant MAX_VOTING_PERIOD = 241920; // About 2 weeks
 
     /// @notice The min setable voting delay
     uint public constant MIN_VOTING_DELAY = 1;
 
     /// @notice The max setable voting delay
-    uint public constant MAX_VOTING_DELAY = 6600; // About 1 day
+    uint public constant MAX_VOTING_DELAY = 17280; // About 1 day
 
     /// @notice The maximum number of actions that can be included in a proposal
     function proposalMaxOperations() public pure returns (uint) { return 10; } // 10 actions
